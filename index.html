@@ -1,0 +1,1453 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Instagram AI Growth Suite</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+:root {
+  --bg: #0a0a0f;
+  --bg-card: #12121a;
+  --bg-input: #1a1a26;
+  --accent: #7c6dfa;
+  --accent-pink: #fa6d8f;
+  --accent-hover: #9080ff;
+  --text: #e8e8f0;
+  --text-muted: #8888aa;
+  --border: #2a2a3a;
+  --success: #4ade80;
+  --warning: #facc15;
+  --danger: #f87171;
+  --radius: 12px;
+  --radius-sm: 8px;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { background: var(--bg); color: var(--text); font-family: 'DM Sans', sans-serif; min-height: 100vh; font-size: 15px; line-height: 1.6; }
+h1, h2, h3, h4 { font-family: 'Syne', sans-serif; }
+
+/* ---- Header ---- */
+.header { background: linear-gradient(135deg, #12121a 0%, #1a1228 100%); border-bottom: 1px solid var(--border); padding: 14px 28px; display: flex; align-items: center; gap: 14px; position: sticky; top: 0; z-index: 100; }
+.header-logo { font-family: 'Syne', sans-serif; font-size: 20px; font-weight: 800; background: linear-gradient(135deg, var(--accent), var(--accent-pink)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+
+/* ---- Tabs ---- */
+.tabs { display: flex; gap: 2px; padding: 0 28px; background: #0d0d17; border-bottom: 1px solid var(--border); overflow-x: auto; }
+.tab-btn { padding: 14px 18px; background: none; border: none; color: var(--text-muted); cursor: pointer; font-family: 'DM Sans', sans-serif; font-size: 14px; font-weight: 500; border-bottom: 2px solid transparent; transition: all 0.2s; white-space: nowrap; }
+.tab-btn:hover { color: var(--text); }
+.tab-btn.active { color: var(--accent); border-bottom-color: var(--accent); }
+
+/* ---- Main ---- */
+.main { padding: 28px; max-width: 1200px; margin: 0 auto; }
+.tab-panel { display: none; }
+.tab-panel.active { display: block; }
+
+/* ---- Cards ---- */
+.card { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius); padding: 22px; margin-bottom: 18px; }
+.card-title { font-size: 17px; font-weight: 700; margin-bottom: 14px; color: var(--text); }
+
+/* ---- Form ---- */
+.form-group { margin-bottom: 14px; }
+label { display: block; font-size: 12px; font-weight: 500; color: var(--text-muted); margin-bottom: 5px; text-transform: uppercase; letter-spacing: 0.5px; }
+input, textarea, select { width: 100%; background: var(--bg-input); border: 1px solid var(--border); border-radius: var(--radius-sm); color: var(--text); font-family: 'DM Sans', sans-serif; font-size: 14px; padding: 9px 13px; outline: none; transition: border-color 0.2s; }
+input:focus, textarea:focus, select:focus { border-color: var(--accent); }
+textarea { resize: vertical; min-height: 90px; }
+select option { background: var(--bg-card); }
+
+/* ---- Buttons ---- */
+.btn { display: inline-flex; align-items: center; gap: 7px; padding: 9px 18px; border-radius: var(--radius-sm); font-family: 'DM Sans', sans-serif; font-size: 14px; font-weight: 600; cursor: pointer; border: none; transition: all 0.2s; text-decoration: none; }
+.btn-primary { background: linear-gradient(135deg, var(--accent), var(--accent-pink)); color: white; }
+.btn-primary:hover { opacity: 0.88; transform: translateY(-1px); }
+.btn-secondary { background: var(--bg-input); color: var(--text); border: 1px solid var(--border); }
+.btn-secondary:hover { border-color: var(--accent); }
+.btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+
+/* ---- Grid ---- */
+.grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+.grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+.grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; }
+
+/* ---- Metrics ---- */
+.metric-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius); padding: 18px; text-align: center; }
+.metric-value { font-family: 'Syne', sans-serif; font-size: 28px; font-weight: 800; background: linear-gradient(135deg, var(--accent), var(--accent-pink)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+.metric-label { font-size: 12px; color: var(--text-muted); margin-top: 4px; }
+
+/* ---- Pills ---- */
+.pill { display: inline-block; padding: 3px 10px; border-radius: 100px; font-size: 11px; font-weight: 600; }
+.pill-green { background: rgba(74,222,128,.15); color: var(--success); }
+.pill-yellow { background: rgba(250,204,21,.15); color: var(--warning); }
+.pill-red { background: rgba(248,113,113,.15); color: var(--danger); }
+.pill-purple { background: rgba(124,109,250,.15); color: var(--accent); }
+.pill-pink { background: rgba(250,109,143,.15); color: var(--accent-pink); }
+
+/* ---- Table ---- */
+table { width: 100%; border-collapse: collapse; }
+th { text-align: left; padding: 9px 11px; font-size: 11px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 1px solid var(--border); }
+td { padding: 11px; border-bottom: 1px solid rgba(42,42,58,.5); font-size: 13px; }
+tr:last-child td { border-bottom: none; }
+tr:hover td { background: rgba(124,109,250,.04); }
+
+/* ---- Tool grid ---- */
+.tool-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 14px; }
+.tool-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius); padding: 18px; cursor: pointer; transition: all 0.2s; position: relative; overflow: hidden; }
+.tool-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px; background: linear-gradient(135deg, var(--accent), var(--accent-pink)); opacity: 0; transition: opacity 0.2s; }
+.tool-card:hover { border-color: var(--accent); transform: translateY(-2px); box-shadow: 0 8px 32px rgba(124,109,250,.15); }
+.tool-card:hover::before { opacity: 1; }
+.tool-icon { font-size: 26px; margin-bottom: 8px; }
+.tool-name { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 14px; margin-bottom: 5px; }
+.tool-desc { font-size: 12px; color: var(--text-muted); line-height: 1.5; }
+
+/* ---- Output ---- */
+.output-area { background: var(--bg-input); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 14px; font-size: 13px; line-height: 1.7; white-space: pre-wrap; min-height: 80px; }
+
+/* ---- Image suggestion ---- */
+.img-suggestion { background: linear-gradient(135deg, rgba(124,109,250,.08), rgba(250,109,143,.08)); border: 1px solid rgba(124,109,250,.25); border-radius: var(--radius-sm); padding: 14px; margin-top: 10px; }
+.img-suggestion-title { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 12px; color: var(--accent); margin-bottom: 7px; text-transform: uppercase; letter-spacing: 0.5px; }
+
+/* ---- Spinner ---- */
+.spinner { display: inline-block; width: 14px; height: 14px; border: 2px solid rgba(255,255,255,.25); border-top-color: white; border-radius: 50%; animation: spin 0.7s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* ---- Alerts ---- */
+.alert { padding: 11px 14px; border-radius: var(--radius-sm); font-size: 13px; margin-bottom: 14px; }
+.alert-info { background: rgba(124,109,250,.12); border: 1px solid rgba(124,109,250,.3); color: #a89dff; }
+.alert-success { background: rgba(74,222,128,.12); border: 1px solid rgba(74,222,128,.3); color: var(--success); }
+.alert-error { background: rgba(248,113,113,.12); border: 1px solid rgba(248,113,113,.3); color: var(--danger); }
+.alert-warning { background: rgba(250,204,21,.12); border: 1px solid rgba(250,204,21,.3); color: var(--warning); }
+
+/* ---- Scrollbar ---- */
+::-webkit-scrollbar { width: 5px; height: 5px; }
+::-webkit-scrollbar-track { background: var(--bg); }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: var(--accent); }
+
+/* ---- Modal ---- */
+.modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.8); z-index: 1000; align-items: center; justify-content: center; backdrop-filter: blur(4px); }
+.modal-overlay.open { display: flex; }
+.modal { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius); padding: 28px; max-width: 580px; width: 92%; max-height: 90vh; overflow-y: auto; }
+.modal-title { font-family: 'Syne', sans-serif; font-size: 19px; font-weight: 700; margin-bottom: 14px; }
+
+/* ---- Post Preview ---- */
+.post-preview { background: #1c1c1c; border-radius: 12px; overflow: hidden; max-width: 380px; margin: 14px auto; border: 1px solid #333; }
+.preview-header { display: flex; align-items: center; gap: 9px; padding: 11px; background: #222; }
+.preview-avatar { width: 30px; height: 30px; border-radius: 50%; background: linear-gradient(135deg, var(--accent), var(--accent-pink)); flex-shrink: 0; }
+.preview-username { font-weight: 600; font-size: 13px; }
+.preview-img-area { width: 100%; height: 280px; background: var(--bg-input); display: flex; align-items: center; justify-content: center; color: var(--text-muted); font-size: 13px; overflow: hidden; }
+.preview-img-area img { width: 100%; height: 100%; object-fit: cover; }
+.preview-caption { padding: 11px; font-size: 13px; line-height: 1.5; max-height: 80px; overflow: hidden; }
+
+/* ---- Template chips ---- */
+.template-chips { display: flex; flex-wrap: wrap; gap: 7px; margin-bottom: 10px; }
+.chip { padding: 5px 13px; background: var(--bg-input); border: 1px solid var(--border); border-radius: 100px; font-size: 12px; cursor: pointer; transition: all 0.2s; white-space: nowrap; }
+.chip:hover { border-color: var(--accent); color: var(--accent); }
+
+/* ---- Section header ---- */
+.section-title { font-family: 'Syne', sans-serif; font-size: 22px; font-weight: 800; margin-bottom: 6px; }
+.section-sub { color: var(--text-muted); font-size: 13px; margin-bottom: 22px; }
+
+/* ---- Generated image ---- */
+.gen-img-wrap { margin-top: 14px; border-radius: var(--radius-sm); overflow: hidden; border: 1px solid var(--border); }
+.gen-img-wrap img { width: 100%; display: block; }
+
+/* ---- Instagram post row ---- */
+.post-row { display: flex; gap: 14px; align-items: center; }
+.post-thumb { width: 52px; height: 52px; border-radius: 7px; object-fit: cover; background: var(--bg-input); flex-shrink: 0; }
+
+/* ---- Connect badge ---- */
+.connect-badge { display: inline-flex; align-items: center; gap: 6px; background: rgba(74,222,128,.12); border: 1px solid rgba(74,222,128,.25); border-radius: 100px; padding: 4px 12px; font-size: 12px; color: var(--success); font-weight: 600; }
+
+@media (max-width: 768px) {
+  .main { padding: 14px; }
+  .grid-2, .grid-3, .grid-4 { grid-template-columns: 1fr; }
+  .header { padding: 12px 14px; }
+  .tabs { padding: 0 14px; }
+}
+</style>
+</head>
+<body>
+
+<!-- ======= HEADER ======= -->
+<div class="header">
+  <div class="header-logo">⚡ AI Growth Suite</div>
+  <span style="color:var(--text-muted);font-size:12px;">Instagram & LinkedIn Automation</span>
+  <div style="margin-left:auto;display:flex;gap:8px;align-items:center;">
+    <span id="profile-badge" style="display:none;"></span>
+    <button class="btn btn-secondary" onclick="openSettings()" style="font-size:12px;padding:7px 13px;">⚙ API Keys</button>
+  </div>
+</div>
+
+<!-- ======= TABS ======= -->
+<div class="tabs">
+  <button class="tab-btn active" data-tab="business" onclick="switchTab('business',this)">🏢 Business Setup</button>
+  <button class="tab-btn" data-tab="tracker" onclick="switchTab('tracker',this)">📊 Conversion Tracker</button>
+  <button class="tab-btn" data-tab="funnel" onclick="switchTab('funnel',this)">🎯 Funnel Strategy</button>
+  <button class="tab-btn" data-tab="content" onclick="switchTab('content',this)">✨ Content Generator</button>
+</div>
+
+<!-- ======= MAIN ======= -->
+<div class="main">
+
+<!-- ========== TAB 1: BUSINESS SETUP ========== -->
+<div id="tab-business" class="tab-panel active">
+  <div class="section-title">Business Setup</div>
+  <div class="section-sub">Extract your business profile — it powers every AI prompt across the entire suite.</div>
+
+  <div class="card">
+    <div class="card-title">🌐 Website Analyser</div>
+    <div class="form-group">
+      <label>Website URL</label>
+      <div style="display:flex;gap:9px;">
+        <input type="url" id="biz-url" placeholder="https://yourwebsite.com" style="flex:1;">
+        <button class="btn btn-primary" onclick="analyseWebsite()" id="analyse-btn">
+          <span id="analyse-sp" style="display:none;"><span class="spinner"></span></span>
+          Analyse Website
+        </button>
+      </div>
+    </div>
+    <div id="biz-analyse-msg"></div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">📋 Business Profile</div>
+    <div class="grid-2">
+      <div class="form-group"><label>Company Name</label><input type="text" id="biz-name" placeholder="Your company name"></div>
+      <div class="form-group"><label>Niche / Industry</label><input type="text" id="biz-niche" placeholder="e.g. Health & Wellness"></div>
+      <div class="form-group"><label>What You Do</label><textarea id="biz-what" rows="3" placeholder="Brief description of your business"></textarea></div>
+      <div class="form-group"><label>Services / Products</label><textarea id="biz-services" rows="3" placeholder="List your main services or products"></textarea></div>
+      <div class="form-group"><label>Target Customer</label><textarea id="biz-target" rows="3" placeholder="Who is your ideal customer?"></textarea></div>
+      <div class="form-group"><label>Unique Selling Proposition</label><textarea id="biz-usp" rows="3" placeholder="What makes you different?"></textarea></div>
+      <div class="form-group">
+        <label>Brand Tone</label>
+        <select id="biz-tone">
+          <option value="">Select tone...</option>
+          <option>Professional & Authoritative</option>
+          <option>Friendly & Approachable</option>
+          <option>Bold & Edgy</option>
+          <option>Inspirational & Motivational</option>
+          <option>Casual & Conversational</option>
+          <option>Luxurious & Premium</option>
+          <option>Educational & Informative</option>
+          <option>Playful & Fun</option>
+        </select>
+      </div>
+      <div class="form-group"><label>Instagram Handle</label><input type="text" id="biz-instagram" placeholder="@yourhandle"></div>
+    </div>
+    <div style="display:flex;gap:9px;margin-top:6px;">
+      <button class="btn btn-primary" onclick="saveProfile()">💾 Save Profile</button>
+      <button class="btn btn-secondary" onclick="clearProfile()">🗑 Clear</button>
+    </div>
+    <div id="biz-save-msg" style="margin-top:10px;"></div>
+  </div>
+</div>
+
+<!-- ========== TAB 2: CONVERSION TRACKER ========== -->
+<div id="tab-tracker" class="tab-panel">
+  <div class="section-title">Conversion Tracker</div>
+  <div class="section-sub">Connect your Meta Developer App to pull posts, impressions, and DMs automatically.</div>
+
+  <!-- Meta Setup Info -->
+  <div class="card">
+    <div class="card-title">🔗 Meta Account Connection</div>
+    <div class="alert alert-info" style="margin-bottom:14px;">
+      Using your own Meta Developer App grants access to: all posts & insights, DM conversations, engagement data, and publishing. <strong>No manual entry needed</strong> — all data is fetched directly from the API.
+    </div>
+    <div class="grid-2">
+      <div class="form-group"><label>Meta / Facebook Access Token</label><input type="password" id="meta-token" placeholder="Long-lived user access token"></div>
+      <div class="form-group"><label>Instagram Business Account ID</label><input type="text" id="ig-account-id" placeholder="e.g. 17841400000000000"></div>
+    </div>
+    <div style="display:flex;gap:9px;flex-wrap:wrap;">
+      <button class="btn btn-primary" onclick="fetchInstagramData()" id="fetch-btn">
+        <span id="fetch-sp" style="display:none;"><span class="spinner"></span></span>
+        📥 Fetch All Instagram Data
+      </button>
+      <button class="btn btn-secondary" onclick="saveMetaConfig()">💾 Save Config</button>
+    </div>
+    <div id="meta-status" style="margin-top:12px;"></div>
+  </div>
+
+  <!-- Metrics Summary -->
+  <div id="metrics-row" style="display:none;" class="grid-4" style="margin-bottom:18px;">
+    <div class="metric-card"><div class="metric-value" id="m-posts">0</div><div class="metric-label">Total Posts</div></div>
+    <div class="metric-card"><div class="metric-value" id="m-impressions">0</div><div class="metric-label">Total Impressions</div></div>
+    <div class="metric-card"><div class="metric-value" id="m-dms">0</div><div class="metric-label">Total DMs</div></div>
+    <div class="metric-card"><div class="metric-value" id="m-conv">0%</div><div class="metric-label">Conversion Rate</div></div>
+    <div class="metric-card"><div class="metric-value" id="m-reach">0</div><div class="metric-label">Total Reach</div></div>
+    <div class="metric-card"><div class="metric-value" id="m-eng">0</div><div class="metric-label">Total Engagement</div></div>
+    <div class="metric-card"><div class="metric-value" id="m-saved">0</div><div class="metric-label">Total Saved</div></div>
+    <div class="metric-card"><div class="metric-value" id="m-avg-eng">0%</div><div class="metric-label">Avg Engagement Rate</div></div>
+  </div>
+
+  <!-- Chart -->
+  <div class="card" id="chart-card" style="display:none;">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;">
+      <div class="card-title" style="margin-bottom:0;">📈 Impressions & Conversion Trend</div>
+      <button class="btn btn-secondary" onclick="getTrackerFeedback()" id="feedback-btn" style="font-size:12px;padding:7px 13px;">
+        <span id="feedback-sp" style="display:none;"><span class="spinner"></span></span>
+        🤖 Claude's Feedback
+      </button>
+    </div>
+    <canvas id="conv-chart" height="90"></canvas>
+  </div>
+
+  <!-- Claude Feedback -->
+  <div class="card" id="feedback-card" style="display:none;">
+    <div class="card-title">🤖 Claude's Performance Analysis</div>
+    <div class="output-area" id="feedback-output"></div>
+  </div>
+
+  <!-- Posts Table -->
+  <div class="card" id="posts-card" style="display:none;">
+    <div class="card-title">📱 Posts & Performance</div>
+    <div id="posts-list"></div>
+  </div>
+
+  <!-- DMs Table -->
+  <div class="card" id="dms-card" style="display:none;">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;">
+      <div class="card-title" style="margin-bottom:0;">💬 DM Conversations</div>
+      <span id="dms-count-badge" class="pill pill-purple"></span>
+    </div>
+    <div id="dms-list"></div>
+  </div>
+</div>
+
+<!-- ========== TAB 3: FUNNEL STRATEGY ========== -->
+<div id="tab-funnel" class="tab-panel">
+  <div class="section-title">Funnel Strategy</div>
+  <div class="section-sub">Get a custom Instagram growth funnel built around your specific business situation.</div>
+
+  <div class="card">
+    <div class="card-title">📋 Strategy Inputs</div>
+    <div class="grid-2">
+      <div class="form-group">
+        <label>Biggest Bottleneck</label>
+        <select id="funnel-bottleneck">
+          <option value="">Select bottleneck...</option>
+          <option>Not enough followers</option>
+          <option>Low post engagement</option>
+          <option>Followers don't convert to DMs</option>
+          <option>DMs don't convert to clients</option>
+          <option>Inconsistent posting</option>
+          <option>Wrong audience / Low quality followers</option>
+          <option>Poor content quality</option>
+          <option>No clear offer</option>
+          <option>Lack of trust / authority</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Posting Frequency</label>
+        <select id="funnel-freq">
+          <option>Daily (7x/week)</option>
+          <option>5-6x per week</option>
+          <option>3-4x per week</option>
+          <option>1-2x per week</option>
+          <option>Irregular / Inconsistent</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Primary Goal</label>
+        <select id="funnel-goal">
+          <option>Get more DMs / enquiries</option>
+          <option>Build a larger audience</option>
+          <option>Increase post engagement</option>
+          <option>Drive traffic to website</option>
+          <option>Build authority in niche</option>
+          <option>Sell products / services directly</option>
+          <option>Grow email list</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Current Follower Count</label>
+        <input type="text" id="funnel-followers" placeholder="e.g. 2,500">
+      </div>
+    </div>
+    <div class="form-group">
+      <label>Additional Context</label>
+      <textarea id="funnel-context" rows="3" placeholder="Any other context about your current situation, challenges, or goals..."></textarea>
+    </div>
+    <button class="btn btn-primary" onclick="buildFunnelStrategy()" id="funnel-btn">
+      <span id="funnel-sp" style="display:none;"><span class="spinner"></span></span>
+      🎯 Build My Funnel Strategy
+    </button>
+  </div>
+
+  <div class="card" id="funnel-output-card" style="display:none;">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+      <div class="card-title" style="margin-bottom:0;">🎯 Your Custom Funnel Strategy</div>
+      <button class="btn btn-secondary" onclick="copyEl('funnel-output')" style="font-size:12px;padding:6px 11px;">📋 Copy</button>
+    </div>
+    <div class="output-area" id="funnel-output"></div>
+  </div>
+</div>
+
+<!-- ========== TAB 4: CONTENT GENERATOR ========== -->
+<div id="tab-content" class="tab-panel">
+  <div class="section-title">Content Generator</div>
+  <div class="section-sub">AI-powered tools for captions, visuals, hashtags, and direct publishing to Instagram & LinkedIn.</div>
+
+  <div class="tool-grid" id="tool-grid">
+    <div class="tool-card" onclick="openTool('repurpose')">
+      <div class="tool-icon">♻️</div>
+      <div class="tool-name">Repurpose Content</div>
+      <div class="tool-desc">Transform any content into Instagram-ready posts</div>
+    </div>
+    <div class="tool-card" onclick="openTool('viral')">
+      <div class="tool-icon">🔥</div>
+      <div class="tool-name">Viral Post Ideas</div>
+      <div class="tool-desc">Scroll-stopping viral concepts for your niche</div>
+    </div>
+    <div class="tool-card" onclick="openTool('captions')">
+      <div class="tool-icon">✍️</div>
+      <div class="tool-name">Instagram Captions</div>
+      <div class="tool-desc">Compelling captions with hook, body, and CTA</div>
+    </div>
+    <div class="tool-card" onclick="openTool('hashtags')">
+      <div class="tool-icon">#️⃣</div>
+      <div class="tool-name">Hashtag Groups</div>
+      <div class="tool-desc">Strategic hashtag sets for maximum reach</div>
+    </div>
+    <div class="tool-card" onclick="openTool('reel')">
+      <div class="tool-icon">🎬</div>
+      <div class="tool-name">Reel Framework</div>
+      <div class="tool-desc">Complete Reel scripts with hooks and structure</div>
+    </div>
+    <div class="tool-card" onclick="openTool('trend')">
+      <div class="tool-icon">📊</div>
+      <div class="tool-name">Trend Analysis</div>
+      <div class="tool-desc">Trending topics and content angles in your niche</div>
+    </div>
+    <div class="tool-card" onclick="openTool('custom')">
+      <div class="tool-icon">🎯</div>
+      <div class="tool-name">Custom Prompt</div>
+      <div class="tool-desc">6 pre-loaded templates + your own prompts</div>
+    </div>
+    <div class="tool-card" onclick="openTool('create-post')" style="border-color: rgba(124,109,250,.4);">
+      <div class="tool-icon">📸</div>
+      <div class="tool-name">Create & Publish Post</div>
+      <div class="tool-desc">Generate AI image + caption, then publish to Instagram or LinkedIn</div>
+    </div>
+  </div>
+
+  <div class="card" id="tool-panel" style="display:none;margin-top:18px;">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;">
+      <div class="card-title" id="tool-panel-title" style="margin-bottom:0;"></div>
+      <button class="btn btn-secondary" onclick="closeTool()" style="font-size:12px;padding:6px 11px;">✕ Close</button>
+    </div>
+    <div id="tool-panel-body"></div>
+  </div>
+</div>
+
+</div><!-- end .main -->
+
+<!-- ======= SETTINGS MODAL ======= -->
+<div class="modal-overlay" id="settings-modal">
+  <div class="modal">
+    <div class="modal-title">⚙ API Keys & Configuration</div>
+    <div class="alert alert-info">Keys are stored in your browser's localStorage and only sent to their respective APIs — never to any third-party server.</div>
+    <div class="form-group"><label>Claude API Key (Anthropic)</label><input type="password" id="s-claude" placeholder="sk-ant-..."></div>
+    <div class="form-group"><label>OpenAI API Key (DALL-E image generation)</label><input type="password" id="s-openai" placeholder="sk-..."></div>
+    <hr style="border-color:var(--border);margin:12px 0;">
+    <div class="form-group"><label>Meta / Facebook Long-Lived Access Token</label><input type="password" id="s-meta" placeholder="EAA..."></div>
+    <div class="form-group"><label>Instagram Business Account ID</label><input type="text" id="s-ig-id" placeholder="17841400000000000"></div>
+    <hr style="border-color:var(--border);margin:12px 0;">
+    <div class="form-group"><label>LinkedIn Access Token (OAuth 2.0)</label><input type="password" id="s-li" placeholder="LinkedIn bearer token"></div>
+    <div class="form-group"><label>LinkedIn Person URN</label><input type="text" id="s-li-urn" placeholder="urn:li:person:XXXXXXX"></div>
+    <div style="display:flex;gap:9px;margin-top:16px;">
+      <button class="btn btn-primary" onclick="saveSettings()">💾 Save All Keys</button>
+      <button class="btn btn-secondary" onclick="closeModal('settings-modal')">Cancel</button>
+    </div>
+    <div id="s-msg" style="margin-top:10px;"></div>
+  </div>
+</div>
+
+<!-- ======= PUBLISH MODAL ======= -->
+<div class="modal-overlay" id="publish-modal">
+  <div class="modal" style="max-width:620px;">
+    <div class="modal-title">🚀 Publish Post</div>
+    <div id="pub-preview"></div>
+    <div class="form-group" style="margin-top:14px;">
+      <label>Publish To</label>
+      <div style="display:flex;gap:14px;margin-top:8px;flex-wrap:wrap;">
+        <label style="display:flex;align-items:center;gap:7px;cursor:pointer;text-transform:none;font-size:14px;color:var(--text);font-weight:500;letter-spacing:0;">
+          <input type="checkbox" id="pub-ig" style="width:auto;" checked> 📸 Instagram
+        </label>
+        <label style="display:flex;align-items:center;gap:7px;cursor:pointer;text-transform:none;font-size:14px;color:var(--text);font-weight:500;letter-spacing:0;">
+          <input type="checkbox" id="pub-li" style="width:auto;"> 💼 LinkedIn
+        </label>
+      </div>
+    </div>
+    <div class="form-group" id="ig-img-url-row">
+      <label>Image URL for Instagram (must be publicly accessible)</label>
+      <input type="url" id="ig-img-url" placeholder="https://... (upload to Imgur/CDN first if needed)">
+      <div style="font-size:11px;color:var(--text-muted);margin-top:4px;">Instagram requires a public HTTPS image URL. If you generated an image above, its URL is pre-filled.</div>
+    </div>
+    <div style="display:flex;gap:9px;margin-top:16px;flex-wrap:wrap;">
+      <button class="btn btn-primary" onclick="publishPost()" id="pub-btn">
+        <span id="pub-sp" style="display:none;"><span class="spinner"></span></span>
+        🚀 Publish Now
+      </button>
+      <button class="btn btn-secondary" onclick="closeModal('publish-modal')">Cancel</button>
+    </div>
+    <div id="pub-status" style="margin-top:12px;"></div>
+  </div>
+</div>
+
+<script>
+// =====================================================
+// CONSTANTS — must be declared before all init code
+// =====================================================
+
+const TOOL_META = {
+  repurpose:  { icon:'♻️',  title:'Repurpose Content',    label:'Paste existing content to repurpose',             type:'textarea', ph:'Paste blog post, video transcript, article...',              btn:'♻️ Repurpose Now' },
+  viral:      { icon:'🔥',  title:'Viral Post Ideas',      label:'Topic or theme (or leave blank for your niche)', type:'input',    ph:'e.g. productivity hacks, mindset, transformation...',        btn:'🔥 Generate Ideas' },
+  captions:   { icon:'✍️',  title:'Instagram Captions',   label:'What is the post about?',                         type:'textarea', ph:'Describe the post topic, angle, or key message...',         btn:'✍️ Write Captions' },
+  hashtags:   { icon:'#️⃣', title:'Hashtag Groups',        label:'Post topic or niche',                             type:'input',    ph:'e.g. business coaching, fitness transformation...',          btn:'#️⃣ Generate Hashtags' },
+  reel:       { icon:'🎬',  title:'Reel Framework',        label:'Reel topic or message',                           type:'textarea', ph:'What is your Reel about?',                                   btn:'🎬 Generate Script' },
+  trend:      { icon:'📊',  title:'Trend Analysis',        label:'Your niche or topic area',                        type:'input',    ph:'e.g. digital marketing, fitness, personal finance...',       btn:'📊 Analyse Trends' },
+  custom:     { icon:'🎯',  title:'Custom Prompt',         label:'Your custom prompt',                              type:'textarea', ph:'Write your prompt or click a template below...',             btn:'✨ Generate' },
+  'create-post': { icon:'📸', title:'Create & Publish Post', label:'Describe your post', type:'textarea', ph:'e.g. "Share 3 productivity tips for entrepreneurs in 2025"', btn:'✨ Generate Post' }
+};
+
+const CUSTOM_TEMPLATES = [
+  'Write a thought leadership post about [TOPIC] that positions me as an expert in my field',
+  'Create a "before and after" transformation story for a client who struggled with [PROBLEM] and achieved [RESULT]',
+  'Write a controversial opinion post about [TOPIC] that will spark debate and engagement in my niche',
+  'Create a "behind the scenes" post showing [ASPECT] of my business to build authenticity and trust',
+  'Write a post that educates my audience on [TOPIC] using a simple numbered list or framework',
+  'Create a personal story about [CHALLENGE I FACED] and what I learned from it to inspire my audience'
+];
+
+const POST_STYLES = [
+  'Educational / Tips', 'Inspirational / Motivational', 'Behind the Scenes',
+  'Promotional / Offer', 'Personal Story', 'Tutorial / How-to',
+  'Controversial / Opinion', 'Product Showcase', 'Quote / Wisdom'
+];
+
+const IMG_STYLES = [
+  'Professional Photography', 'Lifestyle Photography', 'Minimalist & Clean',
+  'Bold & Colorful', 'Dark & Moody', 'Flat Lay', 'Abstract / Artistic', 'Infographic Style'
+];
+
+// =====================================================
+// STATE
+// =====================================================
+
+let currentTool = null;
+let convChart = null;
+let igState = { posts: [], dms: [], totalImpressions: 0, totalDMs: 0 };
+let publishState = { caption: '', imageUrl: '', dallePrompt: '' };
+
+// =====================================================
+// SETTINGS / STORAGE HELPERS
+// =====================================================
+
+function getKeys() {
+  return {
+    claude:     localStorage.getItem('igs_claude') || '',
+    openai:     localStorage.getItem('igs_openai') || '',
+    meta:       localStorage.getItem('igs_meta')   || '',
+    igId:       localStorage.getItem('igs_ig_id')  || '',
+    li:         localStorage.getItem('igs_li')     || '',
+    liUrn:      localStorage.getItem('igs_li_urn') || ''
+  };
+}
+
+function getProfile() {
+  try { return JSON.parse(localStorage.getItem('igs_profile') || '{}'); } catch(e) { return {}; }
+}
+
+function profileCtx() {
+  const p = getProfile();
+  if (!p.name) return '';
+  return `BUSINESS PROFILE:
+- Company: ${p.name}
+- Niche: ${p.niche || 'N/A'}
+- What they do: ${p.what || 'N/A'}
+- Services/Products: ${p.services || 'N/A'}
+- Target Customer: ${p.target || 'N/A'}
+- USP: ${p.usp || 'N/A'}
+- Brand Tone: ${p.tone || 'N/A'}
+- Instagram: ${p.instagram || 'N/A'}`;
+}
+
+function setMsg(id, html, type) {
+  const el = document.getElementById(id);
+  if (el) el.innerHTML = html ? `<div class="alert alert-${type}">${html}</div>` : '';
+}
+
+function setLoading(btnId, spId, on) {
+  const b = document.getElementById(btnId); const s = document.getElementById(spId);
+  if (b) b.disabled = on;
+  if (s) s.style.display = on ? 'inline' : 'none';
+}
+
+function fmtNum(n) {
+  n = n || 0;
+  if (n >= 1e6) return (n/1e6).toFixed(1)+'M';
+  if (n >= 1e3) return (n/1e3).toFixed(1)+'K';
+  return String(n);
+}
+
+function convPill(r) {
+  r = parseFloat(r);
+  const cls = r >= 2 ? 'pill-green' : r >= 0.5 ? 'pill-yellow' : 'pill-red';
+  return `<span class="pill ${cls}">${r.toFixed(3)}%</span>`;
+}
+
+function copyEl(id) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  navigator.clipboard.writeText(el.textContent || el.innerText)
+    .then(() => alert('Copied to clipboard!'));
+}
+
+// =====================================================
+// API CALLERS
+// =====================================================
+
+async function callClaude(system, user) {
+  const key = getKeys().claude;
+  if (!key) throw new Error('Claude API key not set — click "API Keys" to configure.');
+  const res = await fetch('https://api.anthropic.com/v1/messages', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'x-api-key': key,
+      'anthropic-version': '2023-06-01',
+      'anthropic-dangerous-direct-browser-access': 'true'
+    },
+    body: JSON.stringify({
+      model: 'claude-sonnet-4-20250514',
+      max_tokens: 2500,
+      system,
+      messages: [{ role: 'user', content: user }]
+    })
+  });
+  if (!res.ok) { const e = await res.json().catch(()=>({})); throw new Error(e.error?.message || `Claude API ${res.status}`); }
+  return (await res.json()).content[0].text;
+}
+
+async function callDALLE(prompt) {
+  const key = getKeys().openai;
+  if (!key) throw new Error('OpenAI API key not set — click "API Keys" to configure.');
+  const res = await fetch('https://api.openai.com/v1/images/generations', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${key}` },
+    body: JSON.stringify({ model: 'dall-e-3', prompt: prompt.substring(0,1000), n: 1, size: '1024x1024', quality: 'standard' })
+  });
+  if (!res.ok) { const e = await res.json().catch(()=>({})); throw new Error(e.error?.message || `OpenAI ${res.status}`); }
+  return (await res.json()).data[0].url;
+}
+
+async function metaGET(path, params = {}) {
+  const token = getKeys().meta || document.getElementById('meta-token')?.value || '';
+  if (!token) throw new Error('Meta access token not configured.');
+  const url = new URL(`https://graph.facebook.com/v18.0/${path}`);
+  url.searchParams.set('access_token', token);
+  Object.entries(params).forEach(([k,v]) => url.searchParams.set(k, String(v)));
+  const res = await fetch(url.toString());
+  if (!res.ok) { const e = await res.json().catch(()=>({})); throw new Error(e.error?.message || `Meta API ${res.status}`); }
+  return res.json();
+}
+
+async function metaPOST(path, body = {}) {
+  const token = getKeys().meta || '';
+  if (!token) throw new Error('Meta access token not configured.');
+  const res = await fetch(`https://graph.facebook.com/v18.0/${path}`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ ...body, access_token: token })
+  });
+  if (!res.ok) { const e = await res.json().catch(()=>({})); throw new Error(e.error?.message || `Meta API ${res.status}`); }
+  return res.json();
+}
+
+// =====================================================
+// TAB NAVIGATION
+// =====================================================
+
+function switchTab(name, btn) {
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('tab-' + name).classList.add('active');
+  if (btn) btn.classList.add('active');
+}
+
+// =====================================================
+// MODAL HELPERS
+// =====================================================
+
+function openModal(id) { document.getElementById(id).classList.add('open'); }
+function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+
+function openSettings() {
+  const k = getKeys();
+  document.getElementById('s-claude').value = k.claude;
+  document.getElementById('s-openai').value = k.openai;
+  document.getElementById('s-meta').value   = k.meta;
+  document.getElementById('s-ig-id').value  = k.igId;
+  document.getElementById('s-li').value     = k.li;
+  document.getElementById('s-li-urn').value = k.liUrn;
+  openModal('settings-modal');
+}
+
+function saveSettings() {
+  localStorage.setItem('igs_claude',  document.getElementById('s-claude').value.trim());
+  localStorage.setItem('igs_openai',  document.getElementById('s-openai').value.trim());
+  localStorage.setItem('igs_meta',    document.getElementById('s-meta').value.trim());
+  localStorage.setItem('igs_ig_id',   document.getElementById('s-ig-id').value.trim());
+  localStorage.setItem('igs_li',      document.getElementById('s-li').value.trim());
+  localStorage.setItem('igs_li_urn',  document.getElementById('s-li-urn').value.trim());
+  setMsg('s-msg', '✅ All keys saved successfully!', 'success');
+  setTimeout(() => closeModal('settings-modal'), 1500);
+}
+
+// =====================================================
+// TAB 1 — BUSINESS SETUP
+// =====================================================
+
+async function analyseWebsite() {
+  const url = document.getElementById('biz-url').value.trim();
+  if (!url) { alert('Enter a website URL first.'); return; }
+  setLoading('analyse-btn','analyse-sp', true);
+  try {
+    const raw = await callClaude(
+      'You are a business analyst. Respond with valid JSON only — no markdown fences, no extra text.',
+      `Analyse this website URL and extract its business profile: ${url}
+Return ONLY this JSON structure:
+{"name":"","niche":"","what":"","services":"","target":"","usp":"","tone":""}`
+    );
+    const m = raw.match(/\{[\s\S]*\}/);
+    const p = JSON.parse(m ? m[0] : raw);
+    document.getElementById('biz-name').value     = p.name     || '';
+    document.getElementById('biz-niche').value    = p.niche    || '';
+    document.getElementById('biz-what').value     = p.what     || '';
+    document.getElementById('biz-services').value = p.services || '';
+    document.getElementById('biz-target').value   = p.target   || '';
+    document.getElementById('biz-usp').value      = p.usp      || '';
+    const toneEl = document.getElementById('biz-tone');
+    const match = Array.from(toneEl.options).find(o => o.value.toLowerCase().includes((p.tone||'').split(' ')[0].toLowerCase()));
+    if (match) toneEl.value = match.value;
+    setMsg('biz-analyse-msg', '✅ Website analysed! Review the extracted profile and click Save Profile.', 'success');
+  } catch(e) {
+    setMsg('biz-analyse-msg', '❌ ' + e.message, 'error');
+  }
+  setLoading('analyse-btn','analyse-sp', false);
+}
+
+function saveProfile() {
+  const p = {
+    name:     document.getElementById('biz-name').value,
+    niche:    document.getElementById('biz-niche').value,
+    what:     document.getElementById('biz-what').value,
+    services: document.getElementById('biz-services').value,
+    target:   document.getElementById('biz-target').value,
+    usp:      document.getElementById('biz-usp').value,
+    tone:     document.getElementById('biz-tone').value,
+    instagram:document.getElementById('biz-instagram').value
+  };
+  localStorage.setItem('igs_profile', JSON.stringify(p));
+  const badge = document.getElementById('profile-badge');
+  if (badge) { badge.innerHTML = `<span class="connect-badge">✅ ${p.name}</span>`; badge.style.display='inline-flex'; }
+  setMsg('biz-save-msg', '✅ Profile saved! It will now be injected into every AI prompt across the suite.', 'success');
+}
+
+function clearProfile() {
+  if (!confirm('Clear all business profile data?')) return;
+  localStorage.removeItem('igs_profile');
+  ['biz-name','biz-niche','biz-what','biz-services','biz-target','biz-usp','biz-instagram'].forEach(id => { document.getElementById(id).value = ''; });
+  document.getElementById('biz-tone').value = '';
+  setMsg('biz-save-msg', 'Profile cleared.', 'info');
+}
+
+function loadSavedProfile() {
+  const p = getProfile();
+  if (!p.name) return;
+  document.getElementById('biz-name').value     = p.name     || '';
+  document.getElementById('biz-niche').value    = p.niche    || '';
+  document.getElementById('biz-what').value     = p.what     || '';
+  document.getElementById('biz-services').value = p.services || '';
+  document.getElementById('biz-target').value   = p.target   || '';
+  document.getElementById('biz-usp').value      = p.usp      || '';
+  document.getElementById('biz-tone').value     = p.tone     || '';
+  document.getElementById('biz-instagram').value= p.instagram|| '';
+  const badge = document.getElementById('profile-badge');
+  if (badge) { badge.innerHTML = `<span class="connect-badge">✅ ${p.name}</span>`; badge.style.display='inline-flex'; }
+}
+
+// =====================================================
+// TAB 2 — CONVERSION TRACKER
+// =====================================================
+
+function saveMetaConfig() {
+  const t = document.getElementById('meta-token').value.trim();
+  const a = document.getElementById('ig-account-id').value.trim();
+  if (t) localStorage.setItem('igs_meta', t);
+  if (a) localStorage.setItem('igs_ig_id', a);
+  setMsg('meta-status', '✅ Meta configuration saved.', 'success');
+}
+
+async function fetchInstagramData() {
+  const token = document.getElementById('meta-token').value.trim() || getKeys().meta;
+  const accountId = document.getElementById('ig-account-id').value.trim() || getKeys().igId;
+  if (!token)     { setMsg('meta-status','❌ Please enter your Meta Access Token.','error'); return; }
+  if (!accountId) { setMsg('meta-status','❌ Please enter your Instagram Business Account ID.','error'); return; }
+  // Store so metaGET can use them
+  localStorage.setItem('igs_meta', token);
+  localStorage.setItem('igs_ig_id', accountId);
+
+  setLoading('fetch-btn','fetch-sp',true);
+  setMsg('meta-status','⏳ Fetching posts...','info');
+
+  try {
+    // --- Fetch all media ---
+    let allPosts = [];
+    let nextUrl = null;
+    const firstRes = await metaGET(`${accountId}/media`, {
+      fields: 'id,caption,timestamp,media_type,media_url,thumbnail_url,permalink,like_count,comments_count',
+      limit: 50
+    });
+    allPosts = firstRes.data || [];
+    nextUrl = firstRes.paging?.next || null;
+    while (nextUrl && allPosts.length < 200) {
+      const r = await fetch(nextUrl); const d = await r.json();
+      allPosts = allPosts.concat(d.data || []);
+      nextUrl = d.paging?.next || null;
+    }
+
+    setMsg('meta-status', `⏳ Found ${allPosts.length} posts — fetching insights (this may take a moment)...`, 'info');
+
+    // --- Fetch insights for each post in batches ---
+    const postsWithInsights = [];
+    for (let i = 0; i < allPosts.length; i++) {
+      const post = allPosts[i];
+      try {
+        const ins = await metaGET(`${post.id}/insights`, {
+          metric: 'impressions,reach,engagement,saved'
+        });
+        const insMap = {};
+        (ins.data || []).forEach(m => { insMap[m.name] = m.values?.[0]?.value || 0; });
+        postsWithInsights.push({ ...post, ins: insMap });
+      } catch(e) {
+        postsWithInsights.push({ ...post, ins: { impressions:0, reach:0, engagement:0, saved:0 } });
+      }
+      if (i % 10 === 0) setMsg('meta-status', `⏳ Processing post ${i+1}/${allPosts.length}...`, 'info');
+    }
+
+    // --- Fetch DMs ---
+    setMsg('meta-status', '⏳ Fetching DM conversations...', 'info');
+    let conversations = [];
+    try {
+      const convRes = await metaGET(`${accountId}/conversations`, {
+        platform: 'instagram',
+        fields: 'id,participants,message_count,updated_time,snippet',
+        limit: 100
+      });
+      conversations = convRes.data || [];
+      let nextConv = convRes.paging?.next || null;
+      while (nextConv && conversations.length < 500) {
+        const r = await fetch(nextConv); const d = await r.json();
+        conversations = conversations.concat(d.data || []);
+        nextConv = d.paging?.next || null;
+      }
+    } catch(e) { console.warn('DM fetch failed:', e.message); }
+
+    // --- Compute totals ---
+    const totImp = postsWithInsights.reduce((s,p) => s+(p.ins.impressions||0), 0);
+    const totReach = postsWithInsights.reduce((s,p) => s+(p.ins.reach||0), 0);
+    const totEng = postsWithInsights.reduce((s,p) => s+(p.ins.engagement||0), 0);
+    const totSaved = postsWithInsights.reduce((s,p) => s+(p.ins.saved||0), 0);
+    const totDMs = conversations.length;
+    const convRate = totImp > 0 ? ((totDMs/totImp)*100).toFixed(3) : '0';
+    const avgEngRate = totImp > 0 ? ((totEng/totImp)*100).toFixed(2) : '0';
+
+    igState = { posts: postsWithInsights, dms: conversations, totalImpressions: totImp, totalDMs: totDMs };
+    localStorage.setItem('igs_ig_cache', JSON.stringify(igState));
+
+    renderTrackerUI(postsWithInsights, conversations, totImp, totReach, totEng, totSaved, totDMs, convRate, avgEngRate);
+    setMsg('meta-status', `✅ Done! Fetched ${postsWithInsights.length} posts and ${totDMs} DM conversations.`, 'success');
+  } catch(e) {
+    setMsg('meta-status', '❌ ' + e.message, 'error');
+  }
+  setLoading('fetch-btn','fetch-sp',false);
+}
+
+function renderTrackerUI(posts, dms, totImp, totReach, totEng, totSaved, totDMs, convRate, avgEngRate) {
+  // Metrics
+  const mr = document.getElementById('metrics-row');
+  mr.style.display = 'grid';
+  mr.style.gridTemplateColumns = 'repeat(4,1fr)';
+  document.getElementById('m-posts').textContent       = fmtNum(posts.length);
+  document.getElementById('m-impressions').textContent = fmtNum(totImp);
+  document.getElementById('m-dms').textContent         = fmtNum(totDMs);
+  document.getElementById('m-conv').textContent        = convRate+'%';
+  document.getElementById('m-reach').textContent       = fmtNum(totReach);
+  document.getElementById('m-eng').textContent         = fmtNum(totEng);
+  document.getElementById('m-saved').textContent       = fmtNum(totSaved);
+  document.getElementById('m-avg-eng').textContent     = avgEngRate+'%';
+
+  // Chart
+  document.getElementById('chart-card').style.display = 'block';
+  renderChart(posts);
+
+  // Posts table
+  document.getElementById('posts-card').style.display = 'block';
+  renderPostsTable(posts);
+
+  // DMs table
+  document.getElementById('dms-card').style.display = 'block';
+  document.getElementById('dms-count-badge').textContent = `${totDMs} conversations`;
+  renderDMsTable(dms);
+}
+
+function renderChart(posts) {
+  const sorted = [...posts].sort((a,b) => new Date(a.timestamp)-new Date(b.timestamp));
+  const labels = sorted.map(p => new Date(p.timestamp).toLocaleDateString('en-GB',{day:'numeric',month:'short'}));
+  const imp    = sorted.map(p => p.ins.impressions||0);
+  const eng    = sorted.map(p => p.ins.engagement||0);
+  const ctx = document.getElementById('conv-chart').getContext('2d');
+  if (convChart) convChart.destroy();
+  convChart = new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels,
+      datasets: [
+        { label:'Impressions', data:imp, borderColor:'#7c6dfa', backgroundColor:'rgba(124,109,250,.1)', tension:0.4, fill:true, pointBackgroundColor:'#7c6dfa', pointRadius:3 },
+        { label:'Engagement',  data:eng, borderColor:'#fa6d8f', backgroundColor:'rgba(250,109,143,.05)', tension:0.4, fill:false, pointBackgroundColor:'#fa6d8f', pointRadius:3 }
+      ]
+    },
+    options: {
+      responsive:true,
+      interaction:{ mode:'index', intersect:false },
+      plugins:{ legend:{ labels:{ color:'#8888aa', font:{family:'DM Sans',size:12} } } },
+      scales:{
+        x:{ ticks:{color:'#8888aa',font:{size:11}}, grid:{color:'rgba(42,42,58,.4)'} },
+        y:{ ticks:{color:'#8888aa',font:{size:11}}, grid:{color:'rgba(42,42,58,.4)'} }
+      }
+    }
+  });
+}
+
+function renderPostsTable(posts) {
+  if (!posts.length) { document.getElementById('posts-list').innerHTML = '<p style="color:var(--text-muted);padding:16px;text-align:center;">No posts found.</p>'; return; }
+  const sorted = [...posts].sort((a,b) => new Date(b.timestamp)-new Date(a.timestamp));
+  let html = `<div style="overflow-x:auto;"><table>
+    <thead><tr>
+      <th>Post</th><th>Date</th><th>Type</th>
+      <th>Impressions</th><th>Reach</th><th>Engagement</th><th>Saved</th>
+    </tr></thead><tbody>`;
+  sorted.forEach(p => {
+    const thumb = p.media_url || p.thumbnail_url || '';
+    const date  = new Date(p.timestamp).toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'});
+    const cap   = (p.caption||'No caption').substring(0,55)+'…';
+    const engRate = p.ins.impressions ? ((p.ins.engagement/p.ins.impressions)*100).toFixed(2) : '0';
+    html += `<tr>
+      <td>
+        <div class="post-row">
+          ${thumb ? `<img src="${thumb}" class="post-thumb" onerror="this.style.display='none'" alt="">` : '<div class="post-thumb" style="background:var(--bg-input);display:flex;align-items:center;justify-content:center;font-size:18px;">📷</div>'}
+          <div>
+            <div style="font-size:12px;max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${cap}</div>
+            ${p.permalink ? `<a href="${p.permalink}" target="_blank" style="font-size:11px;color:var(--accent);">View ↗</a>` : ''}
+          </div>
+        </div>
+      </td>
+      <td style="color:var(--text-muted);font-size:12px;white-space:nowrap;">${date}</td>
+      <td><span class="pill pill-purple">${p.media_type||'IMAGE'}</span></td>
+      <td>${fmtNum(p.ins.impressions)}</td>
+      <td>${fmtNum(p.ins.reach)}</td>
+      <td>${fmtNum(p.ins.engagement)} ${convPill(engRate)}</td>
+      <td>${fmtNum(p.ins.saved)}</td>
+    </tr>`;
+  });
+  html += '</tbody></table></div>';
+  document.getElementById('posts-list').innerHTML = html;
+}
+
+function renderDMsTable(dms) {
+  if (!dms.length) {
+    document.getElementById('dms-list').innerHTML = `<div class="alert alert-warning">No DM conversations found. Ensure your Meta App has <strong>instagram_manage_messages</strong> permission and messaging is enabled on your business account.</div>`;
+    return;
+  }
+  let html = `<div style="overflow-x:auto;"><table>
+    <thead><tr><th>ID</th><th>Participants</th><th>Snippet</th><th>Messages</th><th>Last Updated</th></tr></thead><tbody>`;
+  dms.forEach(d => {
+    const parts   = (d.participants?.data||[]).map(p=>p.name||p.id).join(', ') || 'Unknown';
+    const updated = d.updated_time ? new Date(d.updated_time).toLocaleDateString('en-GB') : 'N/A';
+    const snippet = (d.snippet||'').substring(0,60);
+    html += `<tr>
+      <td style="font-size:11px;color:var(--text-muted);">${d.id.substring(0,20)}…</td>
+      <td>${parts}</td>
+      <td style="font-size:12px;color:var(--text-muted);">${snippet}</td>
+      <td>${d.message_count||'?'}</td>
+      <td style="font-size:12px;color:var(--text-muted);">${updated}</td>
+    </tr>`;
+  });
+  html += '</tbody></table></div>';
+  document.getElementById('dms-list').innerHTML = html;
+}
+
+async function getTrackerFeedback() {
+  if (!igState.posts.length) { setMsg('meta-status','❌ Fetch Instagram data first.','error'); return; }
+  setLoading('feedback-btn','feedback-sp',true);
+  try {
+    const top5 = [...igState.posts].sort((a,b)=>(b.ins.impressions||0)-(a.ins.impressions||0)).slice(0,5);
+    const summary = `
+Total Posts: ${igState.posts.length}
+Total Impressions: ${igState.totalImpressions}
+Total DMs/Conversations: ${igState.totalDMs}
+Overall Conversion Rate (DMs÷Impressions×100): ${igState.totalImpressions>0?((igState.totalDMs/igState.totalImpressions)*100).toFixed(3):0}%
+
+Top 5 Posts by Impressions:
+${top5.map(p=>`- "${(p.caption||'').substring(0,70)}…" | Imp:${p.ins.impressions} | Reach:${p.ins.reach} | Eng:${p.ins.engagement} | Saved:${p.ins.saved}`).join('\n')}
+    `.trim();
+
+    const result = await callClaude(
+      `You are an elite Instagram growth expert and data analyst. ${profileCtx()}`,
+      `Analyse this Instagram performance data and give actionable feedback:\n\n${summary}\n\nProvide:
+1. **Overall Performance Assessment** — honest evaluation
+2. **Key Strengths** to double down on
+3. **Critical Weaknesses** to fix immediately
+4. **3 Specific Action Items** for the next 30 days with expected impact
+5. **Conversion Rate Benchmark** — how does ${igState.totalImpressions>0?((igState.totalDMs/igState.totalImpressions)*100).toFixed(3):0}% compare to industry averages?
+
+Be direct, specific, and data-driven.`
+    );
+    document.getElementById('feedback-card').style.display = 'block';
+    document.getElementById('feedback-output').textContent = result;
+    document.getElementById('feedback-card').scrollIntoView({ behavior:'smooth' });
+  } catch(e) {
+    setMsg('meta-status','❌ '+e.message,'error');
+  }
+  setLoading('feedback-btn','feedback-sp',false);
+}
+
+// =====================================================
+// TAB 3 — FUNNEL STRATEGY
+// =====================================================
+
+async function buildFunnelStrategy() {
+  setLoading('funnel-btn','funnel-sp',true);
+  try {
+    const result = await callClaude(
+      `You are an elite Instagram growth strategist who has helped hundreds of businesses generate 6-figure revenue through Instagram. ${profileCtx()}`,
+      `Build a complete custom Instagram growth funnel strategy.
+
+Current Situation:
+- Biggest Bottleneck: ${document.getElementById('funnel-bottleneck').value||'Not specified'}
+- Posting Frequency: ${document.getElementById('funnel-freq').value}
+- Primary Goal: ${document.getElementById('funnel-goal').value}
+- Current Followers: ${document.getElementById('funnel-followers').value||'Not specified'}
+- Additional Context: ${document.getElementById('funnel-context').value||'None'}
+
+Produce a comprehensive strategy with these sections (use clear headings and bullet points):
+
+## 🎯 POSITIONING STRATEGY
+How to position this exact business on Instagram to stand out from competitors.
+
+## 📚 5 CONTENT PILLARS
+The 5 core content themes with 3 example post ideas each, specific to this business.
+
+## 📅 7-DAY CONTENT PLAN
+Day-by-day plan: content type, topic, hook, format (post/reel/carousel), and CTA.
+
+## 💬 DM CONVERSION STRATEGY
+Exact framework for turning followers → DM conversations → paying clients. Include message templates.
+
+## 🔧 BOTTLENECK FIX
+Specific, tactical solution to: "${document.getElementById('funnel-bottleneck').value||'general growth challenges'}".
+
+## 🎯 30-DAY TARGETS
+Measurable KPIs: follower growth target, engagement rate target, DMs per week, conversion to clients, revenue if applicable.
+
+Make every recommendation specific to this business — no generic advice.`
+    );
+    document.getElementById('funnel-output-card').style.display = 'block';
+    document.getElementById('funnel-output').textContent = result;
+    document.getElementById('funnel-output-card').scrollIntoView({ behavior:'smooth' });
+  } catch(e) {
+    document.getElementById('funnel-output-card').style.display = 'block';
+    document.getElementById('funnel-output').textContent = 'Error: '+e.message;
+  }
+  setLoading('funnel-btn','funnel-sp',false);
+}
+
+// =====================================================
+// TAB 4 — CONTENT GENERATOR
+// =====================================================
+
+function openTool(name) {
+  currentTool = name;
+  const m = TOOL_META[name];
+  document.getElementById('tool-panel-title').textContent = m.icon + ' ' + m.title;
+  document.getElementById('tool-panel-body').innerHTML = name === 'create-post' ? buildCreatePostPanel() : buildStdPanel(name, m);
+  document.getElementById('tool-panel').style.display = 'block';
+  document.getElementById('tool-panel').scrollIntoView({ behavior:'smooth', block:'start' });
+  if (name === 'custom') renderChips();
+}
+
+function closeTool() {
+  document.getElementById('tool-panel').style.display = 'none';
+  currentTool = null;
+}
+
+function buildStdPanel(name, m) {
+  const inputHtml = m.type === 'textarea'
+    ? `<textarea id="tool-input" placeholder="${m.ph}" rows="4"></textarea>`
+    : `<input type="text" id="tool-input" placeholder="${m.ph}">`;
+  return `
+    <div class="form-group"><label>${m.label}</label>${inputHtml}</div>
+    ${name==='custom' ? '<div id="chip-container" class="template-chips"></div>' : ''}
+    <div style="display:flex;gap:9px;flex-wrap:wrap;align-items:center;">
+      <button class="btn btn-primary" onclick="generateContent('${name}')" id="gen-btn">
+        <span id="gen-sp" style="display:none;"><span class="spinner"></span></span>
+        ${m.btn}
+      </button>
+      <div class="form-group" style="margin:0;min-width:180px;">
+        <select id="gen-style" style="padding:9px 13px;">
+          ${POST_STYLES.map(s=>`<option>${s}</option>`).join('')}
+        </select>
+      </div>
+    </div>
+    <div id="gen-result" style="display:none;margin-top:16px;">
+      <div class="output-area" id="gen-output"></div>
+      <div class="img-suggestion" id="gen-img-sug" style="display:none;">
+        <div class="img-suggestion-title">📸 Image Suggestion</div>
+        <div id="gen-img-sug-text" style="font-size:13px;color:var(--text);line-height:1.6;"></div>
+      </div>
+      <div id="gen-img-wrap" style="display:none;margin-top:12px;"></div>
+      <div style="display:flex;gap:9px;margin-top:12px;flex-wrap:wrap;">
+        <button class="btn btn-secondary" onclick="copyGenOutput()" style="font-size:12px;padding:7px 13px;">📋 Copy All</button>
+        <button class="btn btn-secondary" onclick="genImage('std')" id="gen-img-btn" style="font-size:12px;padding:7px 13px;">
+          <span id="gen-img-sp" style="display:none;"><span class="spinner"></span></span>
+          🎨 Generate Image
+        </button>
+      </div>
+    </div>
+  `;
+}
+
+function buildCreatePostPanel() {
+  return `
+    <div class="grid-2" style="margin-bottom:12px;">
+      <div class="form-group"><label>Describe your post</label><textarea id="cp-prompt" rows="4" placeholder="e.g. Share 3 productivity tips for entrepreneurs in 2025"></textarea></div>
+      <div>
+        <div class="form-group"><label>Post Style</label><select id="cp-style">${POST_STYLES.map(s=>`<option>${s}</option>`).join('')}</select></div>
+        <div class="form-group"><label>Image Style</label><select id="cp-img-style">${IMG_STYLES.map(s=>`<option>${s}</option>`).join('')}</select></div>
+      </div>
+    </div>
+    <button class="btn btn-primary" onclick="generateCreatePost()" id="cp-btn">
+      <span id="cp-sp" style="display:none;"><span class="spinner"></span></span>
+      ✨ Generate Post
+    </button>
+    <div id="cp-result" style="display:none;margin-top:20px;">
+      <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:15px;margin-bottom:12px;">📸 Post Preview</div>
+      <div class="post-preview" id="cp-preview">
+        <div class="preview-header">
+          <div class="preview-avatar"></div>
+          <div class="preview-username" id="cp-handle">@your_handle</div>
+        </div>
+        <div class="preview-img-area" id="cp-img-area"><span style="font-size:13px;color:var(--text-muted);">🖼 Image will appear here</span></div>
+        <div class="preview-caption" id="cp-caption"></div>
+      </div>
+      <div class="img-suggestion" id="cp-img-sug" style="display:none;margin-top:12px;">
+        <div class="img-suggestion-title">📸 Image Suggestion</div>
+        <div id="cp-img-sug-text" style="font-size:13px;color:var(--text);line-height:1.6;"></div>
+      </div>
+      <div id="cp-img-wrap" style="display:none;margin-top:12px;"></div>
+      <div style="display:flex;gap:9px;margin-top:14px;flex-wrap:wrap;">
+        <button class="btn btn-secondary" onclick="genImage('create')" id="cp-img-btn" style="font-size:12px;padding:7px 13px;">
+          <span id="cp-img-sp" style="display:none;"><span class="spinner"></span></span>
+          🎨 Generate AI Image
+        </button>
+        <button class="btn btn-primary" onclick="openPublishModal()" style="font-size:12px;padding:7px 13px;">🚀 Publish Post</button>
+        <button class="btn btn-secondary" onclick="copyCPCaption()" style="font-size:12px;padding:7px 13px;">📋 Copy Caption</button>
+      </div>
+    </div>
+  `;
+}
+
+function renderChips() {
+  const c = document.getElementById('chip-container');
+  if (!c) return;
+  c.innerHTML = CUSTOM_TEMPLATES.map((t,i) =>
+    `<span class="chip" onclick="loadChip(${i})">${t.substring(0,42)}…</span>`
+  ).join('');
+}
+
+function loadChip(i) {
+  const el = document.getElementById('tool-input');
+  if (el) el.value = CUSTOM_TEMPLATES[i];
+}
+
+function buildImgSuggestionPrompt(toolName, input, result) {
+  return `\n\n---\nAlso append an IMAGE SUGGESTION block at the end using exactly this format:
+
+📸 IMAGE SUGGESTION:
+• Description: [what the image should visually show]
+• Photography Style: [style/mood/aesthetic]
+• Search Terms: [3–5 Unsplash/Pexels keywords]
+• Alt Text: [SEO-optimised alt text]
+• AI Prompt: [detailed DALL-E 3 / Midjourney prompt for this exact visual]`;
+}
+
+async function generateContent(toolName) {
+  const input = (document.getElementById('tool-input')?.value || '').trim();
+  const style = document.getElementById('gen-style')?.value || 'Educational / Tips';
+  setLoading('gen-btn','gen-sp',true);
+  try {
+    const pCtx = profileCtx();
+    let prompt = '';
+    switch(toolName) {
+      case 'repurpose': prompt = `Repurpose this content into 3 Instagram posts (each: hook + body + CTA) in a "${style}" style. Suggest the best format (carousel/reel/single) for each:\n\n${input}`; break;
+      case 'viral':     prompt = `Generate 10 viral Instagram post ideas for: "${input||'my business niche'}". Style: ${style}. For each: hook, angle, why it will go viral, recommended format.`; break;
+      case 'captions':  prompt = `Write 3 different Instagram captions for: "${input}". Style: ${style}. Each must have: scroll-stopping first line, compelling body, clear CTA, hashtag line. Vary the tone/length.`; break;
+      case 'hashtags':  prompt = `Create 3 strategic hashtag sets for Instagram content about: "${input}"\nGroup A — Broad (500K–2M posts), Group B — Mid (50K–500K), Group C — Niche (1K–50K). 15–20 tags each. Explain the targeting strategy.`; break;
+      case 'reel':      prompt = `Create a complete Instagram Reel script for: "${input}". Style: ${style}. Include: first-3-second hook (with visual action), timed content structure, CTA, suggested audio style, text overlay ideas, B-roll shots.`; break;
+      case 'trend':     prompt = `Analyse current 2025 Instagram trends for the "${input||getProfile().niche||'business'}" niche. Provide: top 5 trending formats, emerging topics, Reel audio trends, content gaps, 5 specific post ideas, 30-day predictions.`; break;
+      case 'custom':    prompt = `${input}\n\nPost Style: ${style}`; break;
+    }
+    prompt += buildImgSuggestionPrompt(toolName, input, '');
+
+    const result = await callClaude(
+      `You are an expert Instagram content creator and social media strategist. ${pCtx}`,
+      prompt
+    );
+
+    document.getElementById('gen-result').style.display = 'block';
+    const imgIdx = result.indexOf('📸 IMAGE SUGGESTION:');
+    if (imgIdx > -1) {
+      document.getElementById('gen-output').textContent = result.substring(0, imgIdx).trim();
+      const sug = result.substring(imgIdx).replace('📸 IMAGE SUGGESTION:','').trim();
+      document.getElementById('gen-img-sug').style.display = 'block';
+      document.getElementById('gen-img-sug-text').textContent = sug;
+      const dalleM = sug.match(/AI Prompt:\s*(.+)/i);
+      if (dalleM) document.getElementById('gen-img-btn').dataset.prompt = dalleM[1].trim();
+    } else {
+      document.getElementById('gen-output').textContent = result;
+    }
+  } catch(e) {
+    document.getElementById('gen-result').style.display = 'block';
+    document.getElementById('gen-output').textContent = 'Error: '+e.message;
+  }
+  setLoading('gen-btn','gen-sp',false);
+}
+
+async function generateCreatePost() {
+  const prompt   = (document.getElementById('cp-prompt')?.value||'').trim();
+  const style    = document.getElementById('cp-style')?.value||'Educational / Tips';
+  const imgStyle = document.getElementById('cp-img-style')?.value||'Professional Photography';
+  if (!prompt) { alert('Please describe what you want to post about.'); return; }
+
+  setLoading('cp-btn','cp-sp',true);
+  try {
+    const result = await callClaude(
+      `You are an expert Instagram content creator. ${profileCtx()}`,
+      `Create an Instagram post for: "${prompt}"
+Post Style: ${style}
+Image Style: ${imgStyle}
+
+Reply in EXACTLY this format (no other text):
+
+CAPTION:
+[Full Instagram caption with hook, body, CTA, and hashtags. At least 150 words.]
+
+IMAGE SUGGESTION:
+Description: [vivid description of the ideal photo/visual]
+Photography Style: ${imgStyle}
+Search Terms: [4 Unsplash/Pexels search terms]
+Alt Text: [SEO alt text under 125 chars]
+AI Prompt: [Very detailed DALL-E 3 prompt — specify composition, lighting, colours, mood, subject, style. At least 50 words.]`
+    );
+
+    const capM   = result.match(/CAPTION:\s*([\s\S]*?)(?=IMAGE SUGGESTION:|$)/i);
+    const imgM   = result.match(/IMAGE SUGGESTION:\s*([\s\S]*)$/i);
+    const caption      = capM ? capM[1].trim() : result.trim();
+    const imgSuggestion= imgM ? imgM[1].trim() : '';
+    const dalleM = imgSuggestion.match(/AI Prompt:\s*(.+)/i);
+    const dallePrompt  = dalleM ? dalleM[1].trim() : `${imgStyle} photo for Instagram: ${prompt}`;
+
+    publishState = { caption, imageUrl:'', dallePrompt };
+
+    const profile = getProfile();
+    document.getElementById('cp-handle').textContent = profile.instagram || '@your_handle';
+    document.getElementById('cp-caption').textContent = caption.substring(0,180)+(caption.length>180?'…':'');
+    document.getElementById('cp-result').style.display = 'block';
+    if (imgSuggestion) {
+      document.getElementById('cp-img-sug').style.display = 'block';
+      document.getElementById('cp-img-sug-text').textContent = imgSuggestion;
+    }
+    document.getElementById('cp-img-btn').dataset.prompt = dallePrompt;
+    document.getElementById('cp-result').scrollIntoView({ behavior:'smooth', block:'start' });
+  } catch(e) {
+    alert('Error: '+e.message);
+  }
+  setLoading('cp-btn','cp-sp',false);
+}
+
+async function genImage(context) {
+  const isCreate = context === 'create';
+  const btnId  = isCreate ? 'cp-img-btn' : 'gen-img-btn';
+  const spId   = isCreate ? 'cp-img-sp'  : 'gen-img-sp';
+  const wrapId = isCreate ? 'cp-img-wrap': 'gen-img-wrap';
+  const btn    = document.getElementById(btnId);
+  const prompt = btn.dataset.prompt || (isCreate ? publishState.dallePrompt : (document.getElementById('tool-input')?.value||'social media image'));
+
+  setLoading(btnId, spId, true);
+  try {
+    const url = await callDALLE(prompt);
+    if (isCreate) {
+      publishState.imageUrl = url;
+      document.getElementById('cp-img-area').innerHTML = `<img src="${url}" style="width:100%;height:280px;object-fit:cover;" alt="Generated image">`;
+    }
+    const wrap = document.getElementById(wrapId);
+    wrap.style.display = 'block';
+    wrap.innerHTML = `
+      <div class="gen-img-wrap"><img src="${url}" alt="Generated image"></div>
+      <div style="display:flex;gap:7px;margin-top:8px;">
+        <a href="${url}" target="_blank" class="btn btn-secondary" style="font-size:12px;padding:6px 11px;text-decoration:none;">🔗 Full Size</a>
+        <button class="btn btn-secondary" onclick="navigator.clipboard.writeText('${url}').then(()=>alert('URL copied!'))" style="font-size:12px;padding:6px 11px;">📋 Copy URL</button>
+      </div>`;
+    if (isCreate) document.getElementById('ig-img-url').value = url;
+  } catch(e) {
+    alert('Image generation failed: '+e.message);
+  }
+  setLoading(btnId, spId, false);
+}
+
+function copyGenOutput() {
+  const main = document.getElementById('gen-output')?.textContent||'';
+  const sug  = document.getElementById('gen-img-sug-text')?.textContent||'';
+  navigator.clipboard.writeText(main + (sug ? '\n\n📸 IMAGE SUGGESTION:\n'+sug : ''))
+    .then(()=>alert('Copied!'));
+}
+
+function copyCPCaption() {
+  navigator.clipboard.writeText(publishState.caption).then(()=>alert('Caption copied!'));
+}
+
+// =====================================================
+// PUBLISH POST
+// =====================================================
+
+function openPublishModal() {
+  if (!publishState.caption) { alert('Generate a post first.'); return; }
+  document.getElementById('pub-preview').innerHTML = `
+    <div style="background:var(--bg-input);border-radius:var(--radius-sm);padding:14px;">
+      <div style="font-weight:600;font-size:12px;color:var(--accent);margin-bottom:7px;text-transform:uppercase;letter-spacing:.5px;">Caption Preview</div>
+      <div style="font-size:13px;line-height:1.6;max-height:100px;overflow-y:auto;">${publishState.caption.replace(/\n/g,'<br>')}</div>
+      ${publishState.imageUrl ? `<img src="${publishState.imageUrl}" style="width:100%;max-height:160px;object-fit:cover;border-radius:7px;margin-top:10px;">` : ''}
+    </div>`;
+  if (publishState.imageUrl) document.getElementById('ig-img-url').value = publishState.imageUrl;
+  document.getElementById('pub-status').innerHTML = '';
+  openModal('publish-modal');
+}
+
+async function publishPost() {
+  const toIG = document.getElementById('pub-ig').checked;
+  const toLI = document.getElementById('pub-li').checked;
+  if (!toIG && !toLI) { alert('Select at least one platform.'); return; }
+
+  setLoading('pub-btn','pub-sp',true);
+  const statusEl = document.getElementById('pub-status');
+  statusEl.innerHTML = '';
+  const msgs = [];
+
+  const addMsg = (html) => { msgs.push(html); statusEl.innerHTML = msgs.join('<br>'); };
+
+  if (toIG) {
+    const imgUrl = document.getElementById('ig-img-url').value.trim();
+    const { meta: token, igId: accountId } = getKeys();
+    if (!token || !accountId) {
+      addMsg(`<span style="color:var(--danger)">❌ Instagram: Configure Meta token and Account ID in API Keys.</span>`);
+    } else if (!imgUrl) {
+      addMsg(`<span style="color:var(--danger)">❌ Instagram: An image URL is required.</span>`);
+    } else {
+      try {
+        addMsg('⏳ Creating Instagram media container…');
+        const container = await metaPOST(`${accountId}/media`, { image_url: imgUrl, caption: publishState.caption });
+        if (container.error) throw new Error(container.error.message);
+        msgs[msgs.length-1] = '⏳ Publishing to Instagram…';
+        statusEl.innerHTML = msgs.join('<br>');
+        const pub = await metaPOST(`${accountId}/media_publish`, { creation_id: container.id });
+        if (pub.error) throw new Error(pub.error.message);
+        msgs[msgs.length-1] = `<span style="color:var(--success)">✅ Instagram: Published! Post ID: ${pub.id}</span>`;
+        statusEl.innerHTML = msgs.join('<br>');
+      } catch(e) {
+        msgs[msgs.length-1] = `<span style="color:var(--danger)">❌ Instagram: ${e.message}</span>`;
+        statusEl.innerHTML = msgs.join('<br>');
+      }
+    }
+  }
+
+  if (toLI) {
+    const { li: token, liUrn } = getKeys();
+    if (!token || !liUrn) {
+      addMsg(`<span style="color:var(--danger)">❌ LinkedIn: Configure LinkedIn token and URN in API Keys.</span>`);
+    } else {
+      try {
+        addMsg('⏳ Publishing to LinkedIn…');
+        const res = await fetch('https://api.linkedin.com/v2/ugcPosts', {
+          method: 'POST',
+          headers: { 'Content-Type':'application/json', 'Authorization':`Bearer ${token}`, 'X-Restli-Protocol-Version':'2.0.0' },
+          body: JSON.stringify({
+            author: liUrn,
+            lifecycleState: 'PUBLISHED',
+            specificContent: { 'com.linkedin.ugc.ShareContent': { shareCommentary:{ text: publishState.caption }, shareMediaCategory:'NONE' } },
+            visibility: { 'com.linkedin.ugc.MemberNetworkVisibility': 'PUBLIC' }
+          })
+        });
+        const d = await res.json();
+        if (!res.ok) throw new Error(d.message||`Status ${res.status}`);
+        msgs[msgs.length-1] = `<span style="color:var(--success)">✅ LinkedIn: Published successfully!</span>`;
+        statusEl.innerHTML = msgs.join('<br>');
+      } catch(e) {
+        msgs[msgs.length-1] = `<span style="color:var(--danger)">❌ LinkedIn: ${e.message}</span>`;
+        statusEl.innerHTML = msgs.join('<br>');
+      }
+    }
+  }
+
+  setLoading('pub-btn','pub-sp',false);
+}
+
+// =====================================================
+// BOOT — runs last, after all declarations
+// =====================================================
+
+function boot() {
+  loadSavedProfile();
+
+  // Restore meta config fields
+  const k = getKeys();
+  if (k.meta)  { const el=document.getElementById('meta-token');    if(el) el.value=k.meta; }
+  if (k.igId)  { const el=document.getElementById('ig-account-id'); if(el) el.value=k.igId; }
+
+  // Restore cached Instagram data
+  try {
+    const cached = localStorage.getItem('igs_ig_cache');
+    if (cached) {
+      const d = JSON.parse(cached);
+      igState = d;
+      if (d.posts && d.posts.length > 0) {
+        const totReach = d.posts.reduce((s,p)=>s+(p.ins?.reach||0), 0);
+        const totEng   = d.posts.reduce((s,p)=>s+(p.ins?.engagement||0), 0);
+        const totSaved = d.posts.reduce((s,p)=>s+(p.ins?.saved||0), 0);
+        const convRate = d.totalImpressions>0?((d.totalDMs/d.totalImpressions)*100).toFixed(3):'0';
+        const avgEng   = d.totalImpressions>0?((totEng/d.totalImpressions)*100).toFixed(2):'0';
+        renderTrackerUI(d.posts, d.dms||[], d.totalImpressions, totReach, totEng, totSaved, d.totalDMs, convRate, avgEng);
+      }
+    }
+  } catch(e) { console.warn('Cache restore failed:', e); }
+
+  // Modal overlay click-to-close
+  ['settings-modal','publish-modal'].forEach(id => {
+    document.getElementById(id)?.addEventListener('click', function(e) {
+      if (e.target === this) closeModal(id);
+    });
+  });
+}
+
+boot();
+</script>
+</body>
+</html>
