@@ -1,7 +1,8 @@
 'use client';
 
 import React from 'react';
-import type { TabId } from '@/app/page';
+
+type TabId = 'business' | 'tracker' | 'funnel' | 'content';
 
 interface Tab {
   id: TabId;
