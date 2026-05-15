@@ -2,12 +2,21 @@ const axios = require('axios');
 const { getDecryptedKeys } = require('./aiService');
 
 async function generateDalleImage(apiKey, prompt) {
-  const res = await axios.post(
-    'https://api.openai.com/v1/images/generations',
-    { model: 'dall-e-3', prompt, n: 1, size: '1024x1024', quality: 'standard', response_format: 'b64_json' },
-    { headers: { Authorization: `Bearer ${apiKey}`, 'Content-Type': 'application/json' } }
-  );
-  return { data: res.data.data[0].b64_json, mimeType: 'image/png' };
+  console.log('Generating image with gpt-image-1, prompt:', prompt);
+  try {
+    const res = await axios.post(
+      'https://api.openai.com/v1/images/generations',
+      { model: 'gpt-image-1', prompt, n: 1, size: '1024x1024', quality: 'auto' },
+      { headers: { Authorization: `Bearer ${apiKey}`, 'Content-Type': 'application/json' } }
+    );
+
+    const base64 = res.data.data[0].b64_json; // ← back to b64_json, no URL fetch needed
+
+    return { data: base64, mimeType: 'image/png' };
+  } catch (err) {
+    console.error('OpenAI error:', err.response?.data);
+    throw err;
+  }
 }
 
 // Generates a styled HTML card template for Claude posts
