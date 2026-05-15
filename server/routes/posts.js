@@ -5,6 +5,7 @@ const { auth } = require('../middleware/auth');
 const { GeneratedContent, SocialConnection } = require('../models');
 const { decrypt } = require('../services/encryptionService');
 const { Op } = require('sequelize');
+const { isMaxAllowedPacketError, packetTooLargeResponse } = require('../utils/dbPacketError');
 
 router.use(auth);
 
@@ -54,7 +55,12 @@ router.post('/', async (req, res) => {
       status:      status || 'draft',
     });
     res.json({ success: true, id: record.id });
-  } catch (err) { res.status(500).json({ error: err.message }); }
+  } catch (err) {
+    if (isMaxAllowedPacketError(err)) {
+      return res.status(413).json(packetTooLargeResponse());
+    }
+    res.status(500).json({ error: err.message });
+  }
 });
 
 // PUT /api/posts/:id  — update status, platform, metrics

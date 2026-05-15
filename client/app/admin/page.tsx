@@ -12,8 +12,9 @@ import type { User } from '@/lib/types';
 
 type Tab = 'users' | 'ai' | 'theme';
 
-const INPUT = 'w-full px-3 py-2 bg-bg-input border border-border-base rounded-lg text-text-base placeholder-text-muted focus:outline-none focus:border-accent/60 text-sm transition-colors';
-const BTN_PRIMARY = 'px-4 py-2 rounded-lg bg-gradient-accent text-white text-sm font-semibold hover:opacity-90 transition-opacity disabled:opacity-50';
+const INPUT = 'input-base py-2 text-sm';
+const BTN_PRIMARY =
+  'rounded-xl bg-gradient-accent px-4 py-2.5 text-sm font-semibold text-white shadow-md shadow-accent/18 transition-all duration-200 hover:brightness-[1.04] active:scale-[0.99] disabled:pointer-events-none disabled:opacity-45';
 const BTN_GHOST = 'px-3 py-1.5 rounded-lg border border-border-base text-text-muted text-xs hover:border-accent/40 hover:text-text-base transition-all';
 
 export default function AdminPage() {
@@ -39,8 +40,8 @@ export default function AdminPage() {
 
   // Theme state
   const [theme, setTheme] = useState({
-    themePrimary: '#7c6dfa', themeSecondary: '#fa6d8f', themeButton: '#7c6dfa',
-    themeMode: 'dark', font: 'Montserrat',
+    themePrimary: '#5e67eb', themeSecondary: '#8b93f5', themeButton: '#5e67eb',
+    themeMode: 'dark', font: 'Plus Jakarta Sans',
   });
   const [themeSaving, setThemeSaving] = useState(false);
   const [themeMsg, setThemeMsg] = useState('');
@@ -294,7 +295,7 @@ export default function AdminPage() {
                   <div key={f.key}>
                     <label className="block text-sm font-medium text-text-base mb-1.5">{f.label}</label>
                     <div className="flex items-center gap-2">
-                      <input type="color" value={(theme as Record<string, string>)[f.key] || '#7c6dfa'}
+                      <input type="color" value={(theme as Record<string, string>)[f.key] || '#5e67eb'}
                         onChange={e => setTheme(t => ({ ...t, [f.key]: e.target.value }))}
                         className="w-10 h-10 rounded-lg cursor-pointer border border-border-base bg-transparent"
                       />
@@ -317,7 +318,7 @@ export default function AdminPage() {
                   <label className="block text-sm font-medium text-text-base mb-1.5">Font Family</label>
                   <select value={theme.font} onChange={e => setTheme(t => ({ ...t, font: e.target.value }))}
                     className={INPUT}>
-                    {['Montserrat', 'DM Sans', 'Inter', 'Syne', 'Poppins', 'Roboto'].map(f => (
+                    {['Plus Jakarta Sans', 'Montserrat', 'DM Sans', 'Inter', 'Syne', 'Poppins'].map(f => (
                       <option key={f} value={f}>{f}</option>
                     ))}
                   </select>

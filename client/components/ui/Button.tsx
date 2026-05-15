@@ -24,23 +24,23 @@ export default function Button({
   size = 'md',
 }: ButtonProps) {
   const baseClasses =
-    'inline-flex items-center justify-center gap-2 font-medium rounded-lg transition-all duration-200 cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-accent/50 disabled:opacity-50 disabled:cursor-not-allowed';
+    'inline-flex items-center justify-center gap-2 rounded-xl font-semibold tracking-tight transition-all duration-200 ease-out cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-accent/40 focus-visible:ring-offset-2 focus-visible:ring-offset-bg-base disabled:pointer-events-none disabled:opacity-45';
 
   const sizeClasses = {
-    sm: 'px-3 py-1.5 text-sm',
-    md: 'px-4 py-2.5 text-sm',
-    lg: 'px-6 py-3 text-base',
+    sm: 'px-3.5 py-2 text-[13px]',
+    md: 'px-5 py-2.5 text-sm',
+    lg: 'px-6 py-3 text-[15px]',
   }[size];
 
   const variantClasses = {
     primary:
-      'bg-gradient-to-r from-accent to-pink text-white hover:opacity-90 active:scale-[0.98] shadow-lg shadow-accent/20',
+      'bg-gradient-accent text-white shadow-md shadow-accent/18 hover:shadow-lg hover:shadow-accent/22 hover:brightness-[1.03] active:scale-[0.985] active:brightness-[0.98]',
     secondary:
-      'bg-bg-card border border-border-base text-text-base hover:bg-bg-input hover:border-accent/50 active:scale-[0.98]',
+      'border border-border-base bg-bg-card text-text-base shadow-sm hover:border-accent/35 hover:bg-bg-input hover:shadow-md active:scale-[0.985]',
     danger:
-      'bg-red-500/10 border border-red-500/30 text-red-400 hover:bg-red-500/20 hover:border-red-500/50 active:scale-[0.98]',
+      'border border-red-500/35 bg-red-500/[0.07] text-red-400 hover:border-red-400/55 hover:bg-red-500/15 active:scale-[0.985]',
     ghost:
-      'text-text-muted hover:text-text-base hover:bg-bg-input active:scale-[0.98]',
+      'text-text-muted hover:bg-bg-input hover:text-text-base active:scale-[0.985]',
   }[variant];
 
   return (

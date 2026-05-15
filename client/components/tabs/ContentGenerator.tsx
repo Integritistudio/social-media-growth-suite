@@ -21,7 +21,8 @@ interface Generated {
   provider: string;
 }
 
-const IINPUT = 'w-full px-4 py-2.5 bg-bg-input border border-border-base rounded-lg text-text-base placeholder-text-muted focus:outline-none focus:border-accent/60 text-sm transition-colors resize-none';
+const IINPUT =
+  'input-base resize-none transition-[box-shadow,border-color] duration-200 placeholder:text-text-muted/75';
 
 export default function ContentGenerator() {
   const { profile } = useApp();
@@ -133,11 +134,11 @@ export default function ContentGenerator() {
   function buildFallbackHtml(content: string) {
     const p = profile;
     return `<!DOCTYPE html><html><head><meta charset="UTF-8"><style>*{margin:0;padding:0;box-sizing:border-box}
-body{width:1080px;height:1080px;background:#0a0a0f;font-family:'Segoe UI',sans-serif;display:flex;align-items:center;justify-content:center}
-.card{width:920px;padding:80px;background:linear-gradient(135deg,rgba(124,109,250,.15),rgba(250,109,143,.08));border:1px solid rgba(124,109,250,.2);border-radius:40px}
-.brand{font-size:22px;font-weight:700;color:#7c6dfa;letter-spacing:.12em;text-transform:uppercase;margin-bottom:40px}
-.content{font-size:46px;font-weight:700;color:#e8e8f0;line-height:1.25;margin-bottom:36px}
-.line{width:80px;height:4px;background:linear-gradient(90deg,#7c6dfa,#fa6d8f);border-radius:2px;margin-bottom:36px}
+body{width:1080px;height:1080px;background:#09090b;font-family:system-ui,sans-serif;display:flex;align-items:center;justify-content:center}
+.card{width:920px;padding:80px;background:linear-gradient(145deg,rgba(94,103,235,.12),rgba(139,147,245,.06));border:1px solid rgba(94,103,235,.22);border-radius:40px}
+.brand{font-size:22px;font-weight:700;color:#a5b4fc;letter-spacing:.12em;text-transform:uppercase;margin-bottom:40px}
+.content{font-size:46px;font-weight:700;color:#fafafa;line-height:1.25;margin-bottom:36px}
+.line{width:80px;height:4px;background:linear-gradient(90deg,#5e67eb,#8b93f5);border-radius:2px;margin-bottom:36px}
 </style></head><body><div class="card">
 <div class="brand">${(p?.name || 'Your Brand').replace(/</g,'&lt;')}</div>
 <div class="line"></div>
@@ -177,19 +178,24 @@ body{width:1080px;height:1080px;background:#0a0a0f;font-family:'Segoe UI',sans-s
       {/* Hidden rendering container for html-to-image */}
       <div ref={htmlPreviewRef} style={{ position: 'absolute', left: '-99999px', top: 0, zIndex: -1 }} />
 
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="font-heading font-bold text-2xl text-text-base">✨ Content Studio</h1>
-          <p className="text-text-muted mt-1 text-sm">AI-powered content tools — generate, preview, and track your posts.</p>
-        </div>
-        {/* Section toggle */}
-        <div className="flex gap-1 p-1 bg-bg-input rounded-xl">
-          {([['generator', '✨ Create'], ['posts', '📂 Posts']] as const).map(([id, label]) => (
+      <div className="flex flex-col gap-6 sm:flex-row sm:items-end sm:justify-between">
+        <header className="space-y-1">
+          <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-text-muted/75">Create</p>
+          <h1 className="font-heading text-3xl font-semibold tracking-tight text-text-base">Content studio</h1>
+          <p className="max-w-xl text-sm leading-relaxed text-text-muted">
+            Generate platform-ready copy, visuals, and previews from one structured workspace.
+          </p>
+        </header>
+        <div className="flex shrink-0 gap-1 rounded-2xl border border-border-base bg-bg-input/80 p-1 shadow-inner backdrop-blur-sm">
+          {([['generator', 'Studio'], ['posts', 'Saved posts']] as const).map(([id, label]) => (
             <button
               key={id}
+              type="button"
               onClick={() => setActiveSection(id)}
-              className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
-                activeSection === id ? 'bg-bg-card text-text-base shadow-sm' : 'text-text-muted hover:text-text-base'
+              className={`rounded-xl px-5 py-2 text-[13px] font-semibold transition-all duration-200 ease-out ${
+                activeSection === id
+                  ? 'bg-bg-card text-text-base shadow-sm ring-1 ring-border-base'
+                  : 'text-text-muted hover:text-text-base'
               }`}
             >
               {label}
@@ -202,22 +208,27 @@ body{width:1080px;height:1080px;background:#0a0a0f;font-family:'Segoe UI',sans-s
       {activeSection === 'generator' && (
         <>
           {/* Tool Grid */}
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+          <div className="grid grid-cols-2 gap-3 sm:grid-cols-4 sm:gap-4">
             {TOOL_META.map(tool => {
               const active = activeTool === tool.id;
               return (
                 <button
                   key={tool.id}
+                  type="button"
                   onClick={() => selectTool(tool.id)}
-                  className={`text-left p-4 rounded-xl border transition-all duration-200 ${
+                  className={`rounded-2xl border p-4 text-left transition-all duration-200 ease-out ${
                     active
-                      ? 'border-accent bg-accent/10 shadow-lg shadow-accent/10'
-                      : 'border-border-base bg-bg-card hover:border-accent/40 hover:bg-bg-input'
+                      ? 'border-accent/45 bg-accent/[0.07] shadow-md shadow-accent/10 ring-1 ring-accent/15'
+                      : 'border-border-base bg-bg-card hover:-translate-y-0.5 hover:border-accent/25 hover:bg-bg-input hover:shadow-md'
                   }`}
                 >
-                  <div className="text-2xl mb-2">{tool.icon}</div>
-                  <div className={`font-semibold text-sm ${active ? 'text-accent' : 'text-text-base'}`}>{tool.label}</div>
-                  <div className="text-xs text-text-muted mt-0.5 leading-snug">{tool.description}</div>
+                  <div className="mb-3 flex h-10 w-10 items-center justify-center rounded-xl border border-border-base bg-bg-input text-lg">
+                    {tool.icon}
+                  </div>
+                  <div className={`text-[13px] font-semibold tracking-tight ${active ? 'text-accent' : 'text-text-base'}`}>
+                    {tool.label}
+                  </div>
+                  <div className="mt-1 text-xs leading-snug text-text-muted">{tool.description}</div>
                 </button>
               );
             })}
@@ -260,14 +271,14 @@ body{width:1080px;height:1080px;background:#0a0a0f;font-family:'Segoe UI',sans-s
                   <div>
                     <label className="block text-xs text-text-muted mb-1.5 font-medium uppercase tracking-wide">Content Style</label>
                     <select value={style} onChange={e => setStyle(e.target.value)}
-                      className="w-full px-3 py-2 bg-bg-input border border-border-base rounded-lg text-text-base focus:outline-none focus:border-accent/60 text-sm">
+                      className="select-base py-2.5">
                       {POST_STYLES.map(s => <option key={s.value} value={s.value} className="bg-bg-input">{s.label}</option>)}
                     </select>
                   </div>
                   <div>
                     <label className="block text-xs text-text-muted mb-1.5 font-medium uppercase tracking-wide">Platform</label>
                     <select value={platform} onChange={e => setPlatform(e.target.value as PostPlatform)}
-                      className="w-full px-3 py-2 bg-bg-input border border-border-base rounded-lg text-text-base focus:outline-none focus:border-accent/60 text-sm">
+                      className="select-base py-2.5">
                       <option value="instagram">Instagram</option>
                       <option value="linkedin">LinkedIn</option>
                       <option value="both">Both</option>
@@ -277,7 +288,7 @@ body{width:1080px;height:1080px;background:#0a0a0f;font-family:'Segoe UI',sans-s
                     <div>
                       <label className="block text-xs text-text-muted mb-1.5 font-medium uppercase tracking-wide">Image Style</label>
                       <select value={imgStyle} onChange={e => setImgStyle(e.target.value)}
-                        className="w-full px-3 py-2 bg-bg-input border border-border-base rounded-lg text-text-base focus:outline-none focus:border-accent/60 text-sm">
+                        className="select-base py-2.5">
                         {IMG_STYLES.map(s => <option key={s.value} value={s.value} className="bg-bg-input">{s.label}</option>)}
                       </select>
                     </div>
@@ -286,7 +297,7 @@ body{width:1080px;height:1080px;background:#0a0a0f;font-family:'Segoe UI',sans-s
 
                 <div className="flex items-center gap-3">
                   <Button variant="primary" loading={loading} onClick={handleGenerate} disabled={!input.trim()}>
-                    {loading ? 'Generating…' : '✨ Generate'}
+                    {loading ? 'Generating…' : 'Generate'}
                   </Button>
                   {generated && <Button variant="secondary" size="sm" onClick={() => { setGenerated(null); setImageB64(''); setSavedId(null); }}>Reset</Button>}
                 </div>
@@ -300,12 +311,12 @@ body{width:1080px;height:1080px;background:#0a0a0f;font-family:'Segoe UI',sans-s
 
                   {/* Provider badge */}
                   <div className="flex items-center gap-2">
-                    <span className={`text-xs px-2.5 py-1 rounded-full font-medium border ${
+                    <span className={`rounded-full border px-2.5 py-1 text-xs font-semibold ${
                       generated.provider === 'openai'
-                        ? 'bg-green-500/10 text-green-400 border-green-500/20'
-                        : 'bg-accent/10 text-accent border-accent/20'
+                        ? 'border-emerald-500/25 bg-emerald-500/[0.07] text-emerald-600 dark:text-emerald-400'
+                        : 'border-accent/25 bg-accent/[0.08] text-accent'
                     }`}>
-                      {generated.provider === 'openai' ? '⚡ GPT-4o' : '🧠 Claude'}
+                      {generated.provider === 'openai' ? 'OpenAI' : 'Claude'}
                     </span>
                     <span className="text-xs text-text-muted">
                       {generated.provider === 'claude' ? 'HTML template → client-rendered image' : 'DALL-E 3 image generation'}
@@ -320,7 +331,7 @@ body{width:1080px;height:1080px;background:#0a0a0f;font-family:'Segoe UI',sans-s
                         <div className="flex items-center justify-between mb-2">
                           <p className="text-xs text-text-muted font-medium uppercase tracking-wide">Generated Content</p>
                           <Button variant="ghost" size="sm" onClick={() => handleCopy(generated.content, 'content')}>
-                            {copied === 'content' ? '✅' : '📋'} Copy
+                            {copied === 'content' ? 'Copied' : 'Copy'}
                           </Button>
                         </div>
                         <div className="bg-bg-input border border-border-base rounded-lg p-4 text-sm text-text-base whitespace-pre-wrap leading-relaxed max-h-64 overflow-y-auto">
@@ -330,7 +341,7 @@ body{width:1080px;height:1080px;background:#0a0a0f;font-family:'Segoe UI',sans-s
 
                       {generated.imageSuggestion && (
                         <div>
-                          <p className="text-xs text-text-muted font-medium uppercase tracking-wide mb-2">📸 Image Concept</p>
+                          <p className="text-xs text-text-muted font-medium uppercase tracking-wide mb-2">Image concept</p>
                           <div className="bg-accent/5 border border-accent/20 rounded-lg p-3 text-sm text-text-base">
                             {generated.imageSuggestion}
                           </div>
@@ -340,7 +351,7 @@ body{width:1080px;height:1080px;background:#0a0a0f;font-family:'Segoe UI',sans-s
                       {/* Image + save actions */}
                       <div className="flex flex-wrap items-center gap-2">
                         <Button variant="secondary" loading={imageLoading} onClick={handleGenerateImage}>
-                          {imageLoading ? '🎨 Generating…' : '🎨 Generate Image'}
+                          {imageLoading ? 'Generating…' : 'Generate image'}
                         </Button>
                         <Button
                           variant="primary"
@@ -349,11 +360,11 @@ body{width:1080px;height:1080px;background:#0a0a0f;font-family:'Segoe UI',sans-s
                           onClick={handleSavePost}
                           disabled={saving || Boolean(savedId)}
                         >
-                          {savedId ? '✅ Saved' : '💾 Save Post'}
+                          {savedId ? 'Saved' : 'Save post'}
                         </Button>
                         {imageSrc && (
                           <Button variant="primary" size="sm" onClick={() => setShowPublish(true)}>
-                            🚀 Publish
+                            Publish
                           </Button>
                         )}
                       </div>
@@ -377,7 +388,7 @@ body{width:1080px;height:1080px;background:#0a0a0f;font-family:'Segoe UI',sans-s
                             download="post.png"
                             className="inline-flex items-center gap-1.5 mt-2 px-3 py-1.5 text-sm font-medium rounded-lg bg-accent/10 border border-accent/20 text-accent hover:bg-accent/20 transition-all"
                           >
-                            ⬇️ Download
+                            Download
                           </a>
                         </div>
                       )}
@@ -400,10 +411,11 @@ body{width:1080px;height:1080px;background:#0a0a0f;font-family:'Segoe UI',sans-s
           )}
 
           {!activeTool && (
-            <div className="text-center py-16 text-text-muted">
-              <div className="text-5xl mb-4">✨</div>
-              <p className="font-heading font-semibold text-lg text-text-base">Select a Tool Above</p>
-              <p className="text-sm mt-1">7 AI-powered content tools tailored to your brand.</p>
+            <div className="rounded-2xl border border-dashed border-border-base bg-bg-card/40 py-20 text-center">
+              <p className="font-heading text-lg font-semibold tracking-tight text-text-base">Choose a tool</p>
+              <p className="mx-auto mt-2 max-w-md text-sm leading-relaxed text-text-muted">
+                Pick a workflow above to generate captions, hashtags, reels, or full posts aligned with your profile.
+              </p>
             </div>
           )}
         </>

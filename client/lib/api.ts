@@ -1,6 +1,10 @@
 import axios from 'axios';
 import { getToken, clearAuth } from './auth';
-import type { BusinessProfile, IgPost, IgTotals, DmConversation, ConversionEntry, ImportantDM, ThemeSettings, User, OAuthStatus, GeneratedPost, PostStatus, PostPlatform } from './types';
+import type {
+  BusinessProfile, IgPost, IgTotals, DmConversation, ConversionEntry, ImportantDM, ThemeSettings, User,
+  OAuthStatus, GeneratedPost, PostStatus, PostPlatform,
+  LinkedInAutomationSettingsDto, LinkedInCampaign, LinkedInProspect, LinkedInOutreachAction,
+} from './types';
 
 const api = axios.create({ baseURL: '/api', timeout: 90000 });
 
@@ -188,6 +192,64 @@ export async function disconnectOAuth(platform: 'instagram' | 'linkedin') {
 export async function getPublicSettings() {
   const { data } = await axios.get('/api/settings/public');
   return data as ThemeSettings;
+}
+
+// ── LinkedIn automation (admin) ───────────────────────────────
+export async function getLinkedInAutomationSettings() {
+  const { data } = await api.get('/linkedin-automation/settings');
+  return data as LinkedInAutomationSettingsDto;
+}
+export async function saveLinkedInAutomationSettings(linkedinEmail: string, linkedinPassword: string) {
+  const { data } = await api.put('/linkedin-automation/settings', { linkedinEmail, linkedinPassword });
+  return data as { success: boolean };
+}
+export async function deleteLinkedInAutomationSettings() {
+  const { data } = await api.delete('/linkedin-automation/settings');
+  return data as { success: boolean };
+}
+export async function getLinkedInAutomationMeta() {
+  const { data } = await api.get('/linkedin-automation/meta/roles');
+  return data as { roles: string[]; maxInvitesCap: number };
+}
+export async function listLinkedInCampaigns() {
+  const { data } = await api.get('/linkedin-automation/campaigns');
+  return data as LinkedInCampaign[];
+}
+export async function createLinkedInCampaign(body: {
+  searchQuery: string;
+  targetRole: string;
+  maxInvites: number;
+  inviteNote: string;
+}) {
+  const { data } = await api.post('/linkedin-automation/campaigns', body);
+  return data as LinkedInCampaign;
+}
+export async function updateLinkedInCampaign(
+  id: number,
+  body: Partial<{ searchQuery: string; targetRole: string; maxInvites: number; inviteNote: string }>
+) {
+  const { data } = await api.put(`/linkedin-automation/campaigns/${id}`, body);
+  return data as LinkedInCampaign;
+}
+export async function deleteLinkedInCampaign(id: number) {
+  const { data } = await api.delete(`/linkedin-automation/campaigns/${id}`);
+  return data as { success: boolean };
+}
+export async function startLinkedInCampaign(id: number) {
+  const { data } = await api.post(`/linkedin-automation/campaigns/${id}/start`);
+  return data as { success: boolean; campaign: LinkedInCampaign };
+}
+export async function pauseLinkedInCampaign(id: number) {
+  const { data } = await api.post(`/linkedin-automation/campaigns/${id}/pause`);
+  return data as { success: boolean };
+}
+export async function listLinkedInProspects(campaignId: number) {
+  const { data } = await api.get(`/linkedin-automation/campaigns/${campaignId}/prospects`);
+  return data as LinkedInProspect[];
+}
+export async function listLinkedInOutreachActions(campaignId: number) {
+  const { data } = await api.get(`/linkedin-automation/campaigns/${campaignId}/actions`);
+  return data as LinkedInOutreachAction[];
 }
 
 export default api;

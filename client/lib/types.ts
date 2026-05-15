@@ -144,3 +144,53 @@ export interface OAuthStatus {
   instagram?: SocialConnectionStatus;
   linkedin?: SocialConnectionStatus;
 }
+
+export type LinkedInCampaignStatus =
+  | 'draft' | 'queued' | 'running' | 'paused' | 'completed' | 'failed';
+
+export interface LinkedInAutomationSettingsDto {
+  hasCredentials: boolean;
+  linkedinEmailHint: string;
+  lastLoginAt: string | null;
+  lastLoginError: string | null;
+}
+
+export interface LinkedInCampaign {
+  id: number;
+  user_id: number;
+  search_query: string;
+  target_role: string;
+  max_invites: number;
+  invite_note: string;
+  status: LinkedInCampaignStatus;
+  error_message: string | null;
+  run_requested_at: string | null;
+  started_at: string | null;
+  finished_at: string | null;
+  invites_sent: number;
+  cancel_requested?: boolean;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface LinkedInProspect {
+  id: number;
+  campaign_id: number;
+  company_name: string | null;
+  company_url: string | null;
+  person_name: string;
+  person_url: string;
+  title: string | null;
+  dedupe_key: string;
+  created_at: string;
+}
+
+export interface LinkedInOutreachAction {
+  id: number;
+  campaign_id: number;
+  prospect_id: number | null;
+  status: 'queued' | 'sent' | 'skipped' | 'failed';
+  error_code: string | null;
+  detail: string | null;
+  created_at: string;
+}

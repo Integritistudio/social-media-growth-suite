@@ -18,6 +18,7 @@ app.use('/api/social',   require('./routes/social'));
 app.use('/api/oauth',    require('./routes/oauth'));
 app.use('/api/posts',    require('./routes/posts'));
 app.use('/api/settings', require('./routes/settings'));
+app.use('/api/linkedin-automation', require('./routes/linkedinAutomation'));
 
 // Health check
 app.get('/api/health', (req, res) => res.json({ status: 'ok', timestamp: new Date().toISOString() }));
@@ -26,4 +27,10 @@ app.get('/api/health', (req, res) => res.json({ status: 'ok', timestamp: new Dat
 const { syncDatabase } = require('./models');
 syncDatabase()
   .then(() => app.listen(PORT, () => console.log(`IGS Server → http://localhost:${PORT}`)))
-  .catch(err => { console.error('DB sync failed:', err.message); process.exit(1); });
+  .catch(err => {
+    console.error('DB sync failed');
+    const nested = err.parent?.errors;
+    if (Array.isArray(nested) && nested.length) nested.forEach(e => console.error(e.message || e));
+    else console.error(err.parent?.message || err.message || err.name || err);
+    process.exit(1);
+  });

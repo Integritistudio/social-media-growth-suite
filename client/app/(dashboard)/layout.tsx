@@ -4,6 +4,7 @@ import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
 import SideNav from '@/components/layout/SideNav';
+import Spinner from '@/components/ui/Spinner';
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   const { user, loading } = useAuth();
@@ -15,10 +16,10 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-bg-base flex items-center justify-center">
-        <div className="text-center">
-          <div className="w-12 h-12 rounded-2xl bg-gradient-accent mx-auto mb-4 animate-pulse" />
-          <p className="text-text-muted text-sm">Loading…</p>
+      <div className="flex min-h-screen items-center justify-center bg-app-shell">
+        <div className="flex flex-col items-center gap-4">
+          <Spinner size="lg" />
+          <p className="text-sm font-medium tracking-wide text-text-muted">Loading workspace</p>
         </div>
       </div>
     );
@@ -27,12 +28,11 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   if (!user) return null;
 
   return (
-    <div className="min-h-screen bg-bg-base flex">
+    <div className="flex min-h-screen bg-app-shell">
       <SideNav />
-      <main className="flex-1 ml-64 min-h-screen overflow-y-auto">
-        <div className="max-w-6xl mx-auto px-6 py-8">
-          {children}
-        </div>
+      <main className="relative ml-64 min-h-screen flex-1 overflow-y-auto">
+        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_90%_60%_at_50%_-28%,color-mix(in_srgb,var(--color-primary)_11%,transparent),transparent_58%)]" />
+        <div className="relative mx-auto max-w-6xl px-6 py-10 sm:px-8 lg:px-10 lg:py-12">{children}</div>
       </main>
     </div>
   );

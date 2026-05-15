@@ -66,8 +66,10 @@ export default function PublishModal({ caption, imageData, onClose }: PublishMod
       onClick={e => e.target === e.currentTarget && onClose()}>
       <div className="w-full max-w-xl bg-bg-card border border-border-base rounded-2xl shadow-2xl animate-slide-up">
         <div className="flex items-center justify-between px-6 py-5 border-b border-border-base">
-          <h2 className="font-heading font-bold text-lg text-text-base">🚀 Publish Post</h2>
-          <button onClick={onClose} className="w-8 h-8 flex items-center justify-center rounded-lg text-text-muted hover:text-text-base hover:bg-bg-input transition-all">✕</button>
+          <h2 className="font-heading text-lg font-semibold tracking-tight text-text-base">Publish post</h2>
+          <button type="button" onClick={onClose} className="flex h-9 w-9 items-center justify-center rounded-xl text-text-muted transition-colors hover:bg-bg-input hover:text-text-base focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/35" aria-label="Close">
+            <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2"><path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
+          </button>
         </div>
 
         <div className="p-6 space-y-5">
@@ -92,7 +94,7 @@ export default function PublishModal({ caption, imageData, onClose }: PublishMod
                 <input type="checkbox" checked={publishIG} onChange={e => setPublishIG(e.target.checked)} className="mt-1 accent-accent" />
                 <div className="flex-1">
                   <div className="flex items-center gap-2">
-                    <span className="text-sm font-medium text-text-base">📸 Instagram</span>
+                    <span className="text-sm font-medium text-text-base">Instagram</span>
                     {igStatus === 'success' && <span className="text-xs text-green-400">✓ Published!</span>}
                     {igStatus === 'error'   && <span className="text-xs text-red-400">✗ Failed</span>}
                     {igStatus === 'loading' && <span className="inline-block w-3 h-3 border border-accent border-t-transparent rounded-full animate-spin" />}
@@ -101,7 +103,8 @@ export default function PublishModal({ caption, imageData, onClose }: PublishMod
                     <div className="mt-2">
                       <input type="url" value={imageUrl} onChange={e => setImageUrl(e.target.value)}
                         placeholder="Publicly accessible image URL (required)"
-                        className="w-full px-3 py-2 bg-bg-input border border-border-base rounded-lg text-sm text-text-base placeholder-text-muted focus:outline-none focus:border-accent/60 transition-colors" />
+                        className="input-base py-2 text-sm"
+                      />
                       <p className="text-xs text-text-muted mt-1">Meta requires a public URL. Download your image, host it, then paste the URL here.</p>
                     </div>
                   )}
@@ -114,7 +117,7 @@ export default function PublishModal({ caption, imageData, onClose }: PublishMod
                 <input type="checkbox" checked={publishLI} onChange={e => setPublishLI(e.target.checked)} className="mt-1 accent-accent" />
                 <div className="flex-1">
                   <div className="flex items-center gap-2">
-                    <span className="text-sm font-medium text-text-base">💼 LinkedIn</span>
+                    <span className="text-sm font-medium text-text-base">LinkedIn</span>
                     {liStatus === 'success' && <span className="text-xs text-green-400">✓ Published!</span>}
                     {liStatus === 'error'   && <span className="text-xs text-red-400">✗ Failed</span>}
                     {liStatus === 'loading' && <span className="inline-block w-3 h-3 border border-accent border-t-transparent rounded-full animate-spin" />}
@@ -135,7 +138,7 @@ export default function PublishModal({ caption, imageData, onClose }: PublishMod
           <Button variant="secondary" onClick={onClose}>{allDone ? 'Close' : 'Cancel'}</Button>
           {!allDone && (
             <Button variant="primary" loading={isPublishing} disabled={!publishIG && !publishLI} onClick={handlePublish}>
-              🚀 Publish Now
+              Publish now
             </Button>
           )}
         </div>

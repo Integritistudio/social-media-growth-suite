@@ -108,12 +108,13 @@ export default function FunnelStrategy() {
 
   return (
     <div className="space-y-6 animate-slide-up">
-      <div>
-        <h2 className="font-heading font-bold text-2xl">🎯 Funnel Strategy Builder</h2>
-        <p className="text-text-muted mt-1">
-          Tell the AI about your current situation and get a detailed Instagram growth strategy.
+      <header className="space-y-1">
+        <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-text-muted/75">Strategy</p>
+        <h2 className="font-heading text-3xl font-semibold tracking-tight text-text-base">Funnel builder</h2>
+        <p className="text-sm text-text-muted">
+          Describe your bottleneck and posting rhythm—the model returns a structured growth plan.
         </p>
-      </div>
+      </header>
 
       {!profile && (
         <Alert variant="warning">

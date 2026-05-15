@@ -4,8 +4,8 @@ import { AuthProvider } from '@/contexts/AuthContext';
 import { AppProvider } from '@/contexts/AppContext';
 
 export const metadata: Metadata = {
-  title: 'Instagram Growth Suite',
-  description: 'AI-Powered Instagram & LinkedIn Growth Platform',
+  title: 'Growth Suite',
+  description: 'AI-assisted workflows for social content, analytics, and publishing.',
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
@@ -15,7 +15,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
       </head>
-      <body className="bg-bg-base text-text-base min-h-screen">
+      <body className="min-h-screen bg-bg-base text-text-base antialiased">
         <AuthProvider>
           <AppProvider>
             {children}

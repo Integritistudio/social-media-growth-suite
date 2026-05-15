@@ -69,12 +69,12 @@ export const TOOL_META = [
 export type ToolId = typeof TOOL_META[number]['id'];
 
 export const CUSTOM_TEMPLATES = [
-  { id: 'product-launch',  label: '🚀 Product Launch',      content: 'Create an exciting product launch announcement for {product name}. Include benefits, a special launch offer, and a clear CTA.' },
-  { id: 'behind-scenes',   label: '🎬 Behind the Scenes',   content: 'Write a behind-the-scenes post showing our process for {activity}. Make it authentic and engaging.' },
-  { id: 'testimonial',     label: '⭐ Client Testimonial',  content: 'Create a post featuring this client testimonial: "{paste testimonial}". Make it compelling with a CTA.' },
-  { id: 'tips-list',       label: '💡 Tips List',           content: 'Write a "Top 5 tips for {topic}" post that provides genuine value to {target audience}.' },
-  { id: 'question',        label: '❓ Engagement Question', content: 'Create an engagement-boosting question post about {topic} that gets our audience commenting.' },
-  { id: 'sale-promo',      label: '🛍️ Sale Promotion',     content: 'Write a promo post for a {discount}% off sale on {product}. Include urgency and a strong CTA.' },
+  { id: 'product-launch',  label: 'Product launch',      content: 'Create an exciting product launch announcement for {product name}. Include benefits, a special launch offer, and a clear CTA.' },
+  { id: 'behind-scenes',   label: 'Behind the scenes',   content: 'Write a behind-the-scenes post showing our process for {activity}. Make it authentic and engaging.' },
+  { id: 'testimonial',     label: 'Client testimonial',  content: 'Create a post featuring this client testimonial: "{paste testimonial}". Make it compelling with a CTA.' },
+  { id: 'tips-list',       label: 'Tips list',           content: 'Write a "Top 5 tips for {topic}" post that provides genuine value to {target audience}.' },
+  { id: 'question',        label: 'Engagement question', content: 'Create an engagement-boosting question post about {topic} that gets our audience commenting.' },
+  { id: 'sale-promo',      label: 'Sale promotion',     content: 'Write a promo post for a {discount}% off sale on {product}. Include urgency and a strong CTA.' },
 ];
 
 export const POST_STYLES = [

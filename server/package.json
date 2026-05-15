@@ -1,7 +1,11 @@
 {
   "name": "igs-server",
   "version": "2.0.0",
-  "scripts": { "start": "node index.js", "dev": "nodemon index.js" },
+  "scripts": {
+    "start": "node index.js",
+    "dev": "nodemon index.js",
+    "worker:linkedin": "node workers/linkedinAutomationWorker.js"
+  },
   "dependencies": {
     "axios": "^1.6.7",
     "bcryptjs": "^2.4.3",
@@ -10,7 +14,10 @@
     "express": "^4.18.3",
     "jsonwebtoken": "^9.0.2",
     "mysql2": "^3.9.2",
-    "sequelize": "^6.37.1"
+    "sequelize": "^6.37.1",
+    "playwright": "^1.49.1",
+    "bullmq": "^5.34.5",
+    "ioredis": "^5.4.2"
   },
   "devDependencies": { "nodemon": "^3.1.0" }
 }

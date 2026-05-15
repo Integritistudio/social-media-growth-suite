@@ -13,14 +13,16 @@ export interface CardProps {
 export default function Card({ title, children, className = '', titleAction, action }: CardProps) {
   const headerAction = titleAction || action;
   return (
-    <div className={`bg-bg-card border border-border-base rounded-xl ${className}`}>
+    <div
+      className={`overflow-hidden rounded-2xl border border-border-base bg-bg-card shadow-card transition-shadow duration-300 hover:shadow-float ${className}`}
+    >
       {title && (
-        <div className="flex items-center justify-between px-6 py-4 border-b border-border-base">
-          <h3 className="font-heading font-semibold text-text-base">{title}</h3>
-          {headerAction && <div>{headerAction}</div>}
+        <div className="flex items-center justify-between gap-4 border-b border-border-base bg-bg-elevated/40 px-6 py-4 backdrop-blur-[2px]">
+          <h3 className="font-heading text-[15px] font-semibold tracking-tight text-text-base">{title}</h3>
+          {headerAction && <div className="shrink-0">{headerAction}</div>}
         </div>
       )}
-      <div className={title ? 'p-6' : 'p-6'}>{children}</div>
+      <div className="p-6">{children}</div>
     </div>
   );
 }

@@ -20,7 +20,7 @@ import { Bar } from 'react-chartjs-2';
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
 
-const INPUT = 'w-full px-3 py-2 bg-bg-input border border-border-base rounded-lg text-text-base placeholder-text-muted focus:outline-none focus:border-accent/60 text-sm transition-colors';
+const INPUT = 'input-base py-2 text-sm';
 
 export default function AnalyticsPage() {
   const { profile } = useApp();
@@ -118,13 +118,13 @@ export default function AnalyticsPage() {
       {
         label: 'Impressions',
         data: topPosts.map(p => p.insights?.impressions || 0),
-        backgroundColor: 'rgba(124,109,250,0.7)',
+        backgroundColor: 'rgba(94, 103, 235, 0.72)',
         borderRadius: 6,
       },
       {
         label: 'Reach',
         data: topPosts.map(p => p.insights?.reach || 0),
-        backgroundColor: 'rgba(250,109,143,0.6)',
+        backgroundColor: 'rgba(139, 147, 245, 0.55)',
         borderRadius: 6,
       },
     ],
@@ -132,32 +132,35 @@ export default function AnalyticsPage() {
 
   const chartOptions = {
     responsive: true,
-    plugins: { legend: { labels: { color: '#8888aa', font: { size: 11 } } } },
+    plugins: { legend: { labels: { color: '#a1a1aa', font: { size: 11 } } } },
     scales: {
-      x: { grid: { color: 'rgba(42,42,58,.5)' }, ticks: { color: '#8888aa', font: { size: 10 } } },
-      y: { grid: { color: 'rgba(42,42,58,.5)' }, ticks: { color: '#8888aa', font: { size: 10 } } },
+      x: { grid: { color: 'rgba(39, 39, 42, 0.55)' }, ticks: { color: '#a1a1aa', font: { size: 10 } } },
+      y: { grid: { color: 'rgba(39, 39, 42, 0.55)' }, ticks: { color: '#a1a1aa', font: { size: 10 } } },
     },
   };
 
   if (notConnected) {
     return (
-      <div className="space-y-6 animate-slide-up">
-        <div>
-          <h1 className="font-heading font-bold text-2xl text-text-base">Analytics</h1>
-          <p className="text-text-muted mt-1 text-sm">Instagram insights, posts, and DMs from your connected account.</p>
-        </div>
-        <div className="bg-bg-card border border-border-base rounded-2xl p-10 text-center">
-          <div className="text-5xl mb-4">📊</div>
-          <h2 className="font-heading font-bold text-xl text-text-base mb-2">Instagram Not Connected</h2>
-          <p className="text-text-muted text-sm mb-6 max-w-sm mx-auto">
-            Connect your Instagram account to automatically fetch posts, impressions, and DMs.
-            No manual entry required.
+      <div className="animate-slide-up space-y-6">
+        <header className="space-y-1">
+          <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-text-muted/75">Performance</p>
+          <h1 className="font-heading text-3xl font-semibold tracking-tight text-text-base">Analytics</h1>
+          <p className="text-sm text-text-muted">Connect Instagram to load posts, reach, and messages.</p>
+        </header>
+        <div className="rounded-2xl border border-border-base bg-bg-card p-10 text-center shadow-card">
+          <div className="mx-auto mb-5 flex h-14 w-14 items-center justify-center rounded-2xl border border-border-base bg-bg-input text-accent">
+            <ChartLineIcon className="h-7 w-7" />
+          </div>
+          <h2 className="font-heading text-xl font-semibold text-text-base">Connect Instagram</h2>
+          <p className="mx-auto mt-2 max-w-sm text-sm leading-relaxed text-text-muted">
+            Link your account to fetch posts, impressions, and DMs—no manual CSV imports.
           </p>
           <Link
             href="/accounts"
-            className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-gradient-accent text-white font-semibold text-sm hover:opacity-90 transition-opacity"
+            className="mt-7 inline-flex items-center gap-2 rounded-xl bg-gradient-accent px-6 py-3 text-sm font-semibold text-white shadow-md shadow-accent/20 transition-all duration-200 hover:brightness-[1.04]"
           >
-            Connect Instagram →
+            Go to connections
+            <span aria-hidden>→</span>
           </Link>
         </div>
       </div>
@@ -165,44 +168,50 @@ export default function AnalyticsPage() {
   }
 
   return (
-    <div className="space-y-6 animate-slide-up">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="font-heading font-bold text-2xl text-text-base">Analytics</h1>
-          <p className="text-text-muted mt-1 text-sm">
-            {accountName ? `@${accountName} · ` : ''}Instagram insights fetched automatically.
+    <div className="space-y-8 animate-slide-up">
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+        <header className="space-y-1">
+          <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-text-muted/75">Performance</p>
+          <h1 className="font-heading text-3xl font-semibold tracking-tight text-text-base">Analytics</h1>
+          <p className="text-sm text-text-muted">
+            {accountName ? `@${accountName} · ` : ''}Synced from your connected Instagram account.
           </p>
-        </div>
+        </header>
         <Button variant="secondary" onClick={loadPosts} loading={loading} size="sm">
-          Refresh
+          Refresh data
         </Button>
       </div>
 
       {error && <Alert variant="error" onDismiss={() => setError('')}>{error}</Alert>}
 
       {/* Summary */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 gap-3 sm:grid-cols-4 sm:gap-4">
         {[
-          { label: 'Total Posts',       value: totals.posts.toString(),                    icon: '📸' },
-          { label: 'Total Impressions', value: totals.impressions.toLocaleString(),         icon: '👁️' },
-          { label: 'Total Reach',       value: totals.reach.toLocaleString(),               icon: '📡' },
-          { label: 'Total Engagement',  value: totals.engagement.toLocaleString(),          icon: '❤️' },
-        ].map(c => (
-          <div key={c.label} className="bg-bg-card border border-border-base rounded-xl p-4">
-            <div className="text-2xl mb-1">{c.icon}</div>
-            <div className="font-heading font-bold text-xl text-text-base">{c.value}</div>
-            <div className="text-xs text-text-muted mt-0.5">{c.label}</div>
+          { label: 'Posts', value: totals.posts.toString(), Icon: IconPosts },
+          { label: 'Impressions', value: totals.impressions.toLocaleString(), Icon: IconEye },
+          { label: 'Reach', value: totals.reach.toLocaleString(), Icon: IconBroadcast },
+          { label: 'Engagement', value: totals.engagement.toLocaleString(), Icon: IconHeart },
+        ].map(({ label, value, Icon }) => (
+          <div
+            key={label}
+            className="rounded-2xl border border-border-base bg-bg-card p-4 shadow-card transition-all duration-300 hover:border-accent/20 hover:shadow-float"
+          >
+            <div className="mb-3 flex h-9 w-9 items-center justify-center rounded-xl border border-border-base bg-bg-input text-accent">
+              <Icon className="h-[18px] w-[18px]" />
+            </div>
+            <div className="font-heading text-2xl font-semibold tracking-tight text-text-base">{value}</div>
+            <div className="mt-0.5 text-[11px] font-medium uppercase tracking-wide text-text-muted">{label}</div>
           </div>
         ))}
       </div>
 
       {/* Chart */}
       {posts.length >= 2 && (
-        <div className="bg-bg-card border border-border-base rounded-xl p-5">
-          <div className="flex items-center justify-between mb-4">
-            <p className="text-sm font-medium text-text-base">Top Posts by Impressions & Reach</p>
+        <div className="rounded-2xl border border-border-base bg-bg-card p-6 shadow-card">
+          <div className="mb-5 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+            <p className="text-sm font-semibold text-text-base">Top posts</p>
             <Button variant="ghost" size="sm" loading={feedbackLoading} onClick={handleAIFeedback}>
-              🤖 AI Feedback
+              AI insight
             </Button>
           </div>
           <Bar data={chartData} options={chartOptions} />
@@ -261,8 +270,8 @@ export default function AnalyticsPage() {
           </div>
         </Card>
       ) : !loading && (
-        <div className="bg-bg-card border border-border-base rounded-xl p-8 text-center text-text-muted">
-          No posts found on this account.
+        <div className="rounded-2xl border border-border-base bg-bg-card px-8 py-14 text-center text-sm text-text-muted shadow-card">
+          No posts found for this account yet.
         </div>
       )}
 
@@ -275,7 +284,7 @@ export default function AnalyticsPage() {
               const lastMsg = conv.messages?.data?.[0];
               return (
                 <div key={conv.id} className="flex items-start gap-3 p-3 rounded-lg border border-border-base bg-bg-input/30">
-                  <div className="w-8 h-8 rounded-full bg-gradient-accent flex items-center justify-center text-white text-xs font-bold flex-shrink-0">
+                  <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-accent text-xs font-bold text-white ring-2 ring-bg-card">
                     {other?.name?.charAt(0)?.toUpperCase() || '?'}
                   </div>
                   <div className="flex-1 min-w-0">
@@ -298,8 +307,8 @@ export default function AnalyticsPage() {
 
       {/* VIP Contacts */}
       <Card
-        title="⭐ VIP Contacts"
-        action={<Button variant="ghost" size="sm" onClick={() => setShowDMForm(v => !v)}>{showDMForm ? 'Cancel' : '+ Add'}</Button>}
+        title="VIP contacts"
+        action={<Button variant="ghost" size="sm" onClick={() => setShowDMForm(v => !v)}>{showDMForm ? 'Cancel' : 'Add'}</Button>}
       >
         {showDMForm && (
           <form onSubmit={handleAddVIP} className="mb-5 p-4 bg-bg-input border border-border-base rounded-xl space-y-3 animate-slide-up">
@@ -324,15 +333,14 @@ export default function AnalyticsPage() {
           </form>
         )}
         {importantDMs.length === 0 ? (
-          <div className="text-center py-8 text-text-muted">
-            <div className="text-3xl mb-2">⭐</div>
-            <p className="text-sm">Track important leads and CEO-level contacts here.</p>
+          <div className="py-10 text-center text-text-muted">
+            <p className="text-sm leading-relaxed">Track high-value leads and decision-makers you meet in the inbox.</p>
           </div>
         ) : (
           <div className="space-y-2">
             {importantDMs.map(dm => (
               <div key={dm.id} className="flex items-start gap-3 p-3 rounded-lg border border-border-base bg-bg-input/30 hover:bg-bg-input/60 transition-colors">
-                <div className="w-8 h-8 rounded-full bg-gradient-accent flex items-center justify-center text-white text-xs font-bold flex-shrink-0">
+                <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-accent text-xs font-bold text-white ring-2 ring-bg-card">
                   {dm.name.charAt(0).toUpperCase()}
                 </div>
                 <div className="flex-1 min-w-0">
@@ -349,5 +357,45 @@ export default function AnalyticsPage() {
         )}
       </Card>
     </div>
+  );
+}
+
+function ChartLineIcon({ className }: { className?: string }) {
+  return (
+    <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+      <path strokeLinecap="round" strokeLinejoin="round" d="M3 3v18h18" />
+      <path strokeLinecap="round" strokeLinejoin="round" d="M7 14l3-3 4 4 5-7" />
+    </svg>
+  );
+}
+function IconPosts({ className }: { className?: string }) {
+  return (
+    <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+      <rect x="3" y="3" width="18" height="18" rx="2" />
+      <circle cx="8.5" cy="8.5" r="1.5" fill="currentColor" stroke="none" />
+      <path strokeLinecap="round" strokeLinejoin="round" d="M21 15l-5-5L5 21" />
+    </svg>
+  );
+}
+function IconEye({ className }: { className?: string }) {
+  return (
+    <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+      <path strokeLinecap="round" strokeLinejoin="round" d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7S1 12 1 12z" />
+      <circle cx="12" cy="12" r="3" />
+    </svg>
+  );
+}
+function IconBroadcast({ className }: { className?: string }) {
+  return (
+    <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+      <path strokeLinecap="round" strokeLinejoin="round" d="M8.111 16.404a5.5 5.5 0 017.778 0M12 20h.01M15.536 8.465a9 9 0 010 7.07m2.828-9.9a13 13 0 010 12.728M4.222 19.778a13 13 0 010-12.728m2.828 9.9a9 9 0 010-7.07" />
+    </svg>
+  );
+}
+function IconHeart({ className }: { className?: string }) {
+  return (
+    <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+      <path strokeLinecap="round" strokeLinejoin="round" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+    </svg>
   );
 }

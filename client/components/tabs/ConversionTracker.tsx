@@ -19,7 +19,7 @@ import { Line } from 'react-chartjs-2';
 
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend, Filler);
 
-const INPUT = 'w-full px-3 py-2 bg-bg-input border border-border-base rounded-lg text-text-base placeholder-text-muted focus:outline-none focus:border-accent/60 text-sm transition-colors';
+const INPUT = 'input-base py-2 text-sm';
 
 export default function ConversionTracker() {
   const { profile } = useApp();
@@ -107,7 +107,7 @@ export default function ConversionTracker() {
       label: 'Conversion Rate %',
       data: chartEntries.map(e => e.conversion_rate),
       borderColor: 'var(--color-primary)',
-      backgroundColor: 'rgba(124,109,250,.08)',
+      backgroundColor: 'rgba(94, 103, 235, 0.11)',
       fill: true, tension: 0.4, pointRadius: 4,
       pointBackgroundColor: 'var(--color-primary)',
     }],
@@ -116,40 +116,46 @@ export default function ConversionTracker() {
     responsive: true,
     plugins: { legend: { display: false }, tooltip: { mode: 'index' as const } },
     scales: {
-      x: { grid: { color: 'rgba(42,42,58,.5)' }, ticks: { color: '#8888aa', font: { size: 10 } } },
-      y: { grid: { color: 'rgba(42,42,58,.5)' }, ticks: { color: '#8888aa', font: { size: 10 } } },
+      x: { grid: { color: 'rgba(39, 39, 42, 0.55)' }, ticks: { color: '#a1a1aa', font: { size: 10 } } },
+      y: { grid: { color: 'rgba(39, 39, 42, 0.55)' }, ticks: { color: '#a1a1aa', font: { size: 10 } } },
     },
   };
 
   return (
     <div className="space-y-6 animate-slide-up">
-      <div>
-        <h2 className="font-heading font-bold text-2xl text-text-base">📊 Conversion Tracker</h2>
-        <p className="text-text-muted mt-1 text-sm">Track daily Instagram analytics and conversion rates.</p>
-      </div>
+      <header className="space-y-1">
+        <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-text-muted/75">Measurement</p>
+        <h2 className="font-heading text-3xl font-semibold tracking-tight text-text-base">Conversion tracker</h2>
+        <p className="text-sm text-text-muted">Log daily impressions and inbound DMs to watch conversion trends.</p>
+      </header>
 
       {error && <Alert variant="error" onDismiss={() => setError('')}>{error}</Alert>}
 
       {/* Summary Cards */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 gap-3 sm:grid-cols-4 sm:gap-4">
         {[
-          { label: 'Total Impressions', value: summary.totalImpressions.toLocaleString(), icon: '👁️' },
-          { label: 'Total DMs',         value: summary.totalDMs.toLocaleString(),         icon: '💬' },
-          { label: 'Avg Conversion',    value: `${summary.avgConversion}%`,               icon: '📈' },
-          { label: 'Days Tracked',      value: entries.length.toString(),                 icon: '📅' },
-        ].map(c => (
-          <div key={c.label} className="bg-bg-card border border-border-base rounded-xl p-4">
-            <div className="text-2xl mb-1">{c.icon}</div>
-            <div className="font-heading font-bold text-xl text-text-base">{c.value}</div>
-            <div className="text-xs text-text-muted mt-0.5">{c.label}</div>
+          { label: 'Impressions', value: summary.totalImpressions.toLocaleString(), Icon: IconEye },
+          { label: 'DMs', value: summary.totalDMs.toLocaleString(), Icon: IconChat },
+          { label: 'Avg conversion', value: `${summary.avgConversion}%`, Icon: IconTrend },
+          { label: 'Days tracked', value: entries.length.toString(), Icon: IconCalendar },
+        ].map(({ label, value, Icon }) => (
+          <div
+            key={label}
+            className="rounded-2xl border border-border-base bg-bg-card p-4 shadow-card transition-all duration-300 hover:border-accent/20 hover:shadow-float"
+          >
+            <div className="mb-3 flex h-9 w-9 items-center justify-center rounded-xl border border-border-base bg-bg-input text-accent">
+              <Icon className="h-[18px] w-[18px]" />
+            </div>
+            <div className="font-heading text-2xl font-semibold tracking-tight text-text-base">{value}</div>
+            <div className="mt-0.5 text-[11px] font-medium uppercase tracking-wide text-text-muted">{label}</div>
           </div>
         ))}
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
         {entries.length >= 2 && (
-          <div className="lg:col-span-2 bg-bg-card border border-border-base rounded-xl p-5">
-            <p className="text-sm font-medium text-text-base mb-4">Conversion Rate Trend (last 30 days)</p>
+          <div className="rounded-2xl border border-border-base bg-bg-card p-6 shadow-card lg:col-span-2">
+            <p className="mb-5 text-sm font-semibold text-text-base">Conversion rate (last 30 days)</p>
             <Line data={chartData} options={chartOptions} />
           </div>
         )}
@@ -174,7 +180,7 @@ export default function ConversionTracker() {
               <input type="text" value={notes} onChange={e => setNotes(e.target.value)} placeholder="Any observations…" className={INPUT} />
             </div>
             <Button type="submit" variant="primary" loading={formLoading} disabled={!impressions}>
-              {formLoading ? 'Saving…' : '+ Log Entry'}
+              {formLoading ? 'Saving…' : 'Log entry'}
             </Button>
           </form>
         </Card>
@@ -231,7 +237,7 @@ export default function ConversionTracker() {
 
       {/* Important DMs */}
       <Card
-        title="⭐ VIP Contacts / CEO DMs"
+        title="VIP contacts"
         action={<Button variant="ghost" size="sm" onClick={() => setShowDMForm(v => !v)}>{showDMForm ? 'Cancel' : '+ Add'}</Button>}
       >
         {showDMForm && (
@@ -259,15 +265,14 @@ export default function ConversionTracker() {
         {dmsLoading ? (
           <p className="text-text-muted text-sm py-4 text-center">Loading…</p>
         ) : importantDMs.length === 0 ? (
-          <div className="text-center py-8 text-text-muted">
-            <div className="text-3xl mb-2">⭐</div>
-            <p className="text-sm">No VIP contacts yet. Track important leads and CEO DMs here.</p>
+          <div className="py-10 text-center text-text-muted">
+            <p className="text-sm leading-relaxed">No contacts yet. Pin executives or warm leads you want to follow up with.</p>
           </div>
         ) : (
           <div className="space-y-2">
             {importantDMs.map(dm => (
               <div key={dm.id} className="flex items-start gap-3 p-3 rounded-lg border border-border-base bg-bg-input/30 hover:bg-bg-input/60 transition-colors">
-                <div className="w-8 h-8 rounded-full bg-gradient-accent flex items-center justify-center text-white text-xs font-bold flex-shrink-0">
+                <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-accent text-xs font-bold text-white ring-2 ring-bg-card">
                   {dm.name.charAt(0).toUpperCase()}
                 </div>
                 <div className="flex-1 min-w-0">
@@ -284,5 +289,36 @@ export default function ConversionTracker() {
         )}
       </Card>
     </div>
+  );
+}
+
+function IconEye({ className }: { className?: string }) {
+  return (
+    <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+      <path strokeLinecap="round" strokeLinejoin="round" d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7S1 12 1 12z" />
+      <circle cx="12" cy="12" r="3" />
+    </svg>
+  );
+}
+function IconChat({ className }: { className?: string }) {
+  return (
+    <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+      <path strokeLinecap="round" strokeLinejoin="round" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+    </svg>
+  );
+}
+function IconTrend({ className }: { className?: string }) {
+  return (
+    <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+      <path strokeLinecap="round" strokeLinejoin="round" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+    </svg>
+  );
+}
+function IconCalendar({ className }: { className?: string }) {
+  return (
+    <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+      <rect x="3" y="4" width="18" height="18" rx="2" />
+      <path strokeLinecap="round" strokeLinejoin="round" d="M16 2v4M8 2v4M3 10h18" />
+    </svg>
   );
 }

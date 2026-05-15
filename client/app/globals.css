@@ -1,78 +1,241 @@
-@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800&family=Syne:wght@400;500;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&family=Inter:wght@300;400;500;600;700&family=Poppins:wght@300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300..700;1,300..700&display=swap');
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-/* ── CSS Custom Properties (theme vars) ── */
+/* ── Design tokens (overridable via Admin theme → CSS variables) ── */
 :root {
-  --color-primary:   #7c6dfa;
-  --color-secondary: #fa6d8f;
-  --color-button:    #7c6dfa;
-  --font-brand:      'Montserrat', sans-serif;
+  --color-primary: #5e67eb;
+  --color-secondary: #8b93f5;
+  --color-button: #5e67eb;
+  --font-brand: 'Plus Jakarta Sans', system-ui, sans-serif;
 
-  /* dark mode defaults */
-  --bg-base:    #0a0a0f;
-  --bg-card:    #12121a;
-  --bg-input:   #1a1a26;
-  --text-base:  #e8e8f0;
-  --text-muted: #8888aa;
-  --border-base:#2a2a3a;
+  --radius-sm: 0.5rem;
+  --radius-md: 0.75rem;
+  --radius-lg: 1rem;
+  --radius-xl: 1.25rem;
+
+  --transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-base: 220ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-slow: 320ms cubic-bezier(0.4, 0, 0.2, 1);
+
+  --shadow-card: 0 1px 0 0 rgba(255, 255, 255, 0.04) inset,
+    0 8px 28px -12px rgba(0, 0, 0, 0.55);
+  --shadow-float: 0 16px 40px -16px rgba(0, 0, 0, 0.65);
+
+  /* Dark */
+  --bg-base: #09090b;
+  --bg-elevated: #0c0c0f;
+  --bg-card: #121214;
+  --bg-sidebar: #0f0f12;
+  --bg-input: #18181b;
+  --text-base: #fafafa;
+  --text-muted: #a1a1aa;
+  --border-base: #27272a;
+  --border-subtle: rgba(255, 255, 255, 0.06);
 }
 
-/* ── Light Mode ── */
-[data-theme="light"] {
-  --bg-base:    #f4f4f8;
-  --bg-card:    #ffffff;
-  --bg-input:   #eeeff5;
-  --text-base:  #1a1a2e;
-  --text-muted: #6666aa;
-  --border-base:#d4d4e8;
+[data-theme='light'] {
+  --shadow-card: 0 1px 0 0 rgba(255, 255, 255, 0.9) inset,
+    0 8px 28px -12px rgba(15, 23, 42, 0.12);
+  --shadow-float: 0 16px 40px -16px rgba(15, 23, 42, 0.18);
+
+  --bg-base: #f4f4f5;
+  --bg-elevated: #fafafa;
+  --bg-card: #ffffff;
+  --bg-sidebar: #fafafa;
+  --bg-input: #f4f4f5;
+  --text-base: #18181b;
+  --text-muted: #71717a;
+  --border-base: #e4e4e7;
+  --border-subtle: rgba(24, 24, 27, 0.06);
 }
 
-* { box-sizing: border-box; margin: 0; padding: 0; }
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
 
-html, body {
+html {
+  scroll-behavior: smooth;
+}
+
+html,
+body {
   background-color: var(--bg-base);
   color: var(--text-base);
   font-family: var(--font-brand);
   -webkit-font-smoothing: antialiased;
-  transition: background-color .25s, color .25s;
+  -moz-osx-font-smoothing: grayscale;
+  transition: background-color var(--transition-base), color var(--transition-base);
 }
 
-h1, h2, h3, h4, h5, h6 { font-family: var(--font-brand); }
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: var(--font-brand);
+  font-weight: 650;
+  letter-spacing: -0.02em;
+}
+
+::selection {
+  background: color-mix(in srgb, var(--color-primary) 35%, transparent);
+  color: var(--text-base);
+}
 
 /* ── Scrollbar ── */
-::-webkit-scrollbar { width: 6px; height: 6px; }
-::-webkit-scrollbar-track { background: var(--bg-card); }
-::-webkit-scrollbar-thumb { background: var(--border-base); border-radius: 3px; }
-::-webkit-scrollbar-thumb:hover { background: var(--text-muted); }
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: color-mix(in srgb, var(--border-base) 85%, var(--text-muted));
+  border-radius: 999px;
+  border: 2px solid transparent;
+  background-clip: padding-box;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--text-muted);
+  background-clip: padding-box;
+}
 
-::selection { background: rgba(124,109,250,.3); color: var(--text-base); }
-
-/* ── Utility classes ── */
+/* ── Utilities ── */
 .gradient-text {
-  background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-secondary) 100%);
+  background: linear-gradient(
+    125deg,
+    var(--color-primary) 0%,
+    color-mix(in srgb, var(--color-secondary) 88%, white) 100%
+  );
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
 }
 
+.gradient-border-mask {
+  position: relative;
+}
+.gradient-border-mask::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 1px;
+  background: linear-gradient(
+    135deg,
+    color-mix(in srgb, var(--color-primary) 55%, transparent),
+    color-mix(in srgb, var(--color-secondary) 40%, transparent)
+  );
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
+}
+
+.bg-app-shell {
+  background-color: var(--bg-base);
+  background-image: radial-gradient(
+      ellipse 120% 80% at 50% -30%,
+      color-mix(in srgb, var(--color-primary) 14%, transparent),
+      transparent 52%
+    ),
+    radial-gradient(
+      ellipse 60% 40% at 100% 0%,
+      color-mix(in srgb, var(--color-secondary) 8%, transparent),
+      transparent 45%
+    );
+}
+
 /* ── Animations ── */
 @keyframes slide-up {
-  from { opacity: 0; transform: translateY(12px); }
-  to   { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
-@keyframes fade-in  { from { opacity: 0; } to { opacity: 1; } }
-@keyframes spin     { to { transform: rotate(360deg); } }
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
 
-.animate-slide-up { animation: slide-up .3s ease-out; }
-.animate-fade-in  { animation: fade-in .2s ease-out; }
+.animate-slide-up {
+  animation: slide-up var(--transition-slow) cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+.animate-fade-in {
+  animation: fade-in var(--transition-base) ease-out both;
+}
+
+/* ── Form controls (shared) ── */
+@layer components {
+  .input-base {
+    @apply w-full rounded-xl border border-border-base bg-bg-input px-4 py-2.5 text-sm text-text-base shadow-sm transition-all duration-200 placeholder:text-text-muted;
+    @apply focus:outline-none;
+  }
+  .input-base::placeholder {
+    opacity: 0.72;
+  }
+  .input-base:focus {
+    border-color: color-mix(in srgb, var(--color-primary) 65%, var(--border-base));
+    box-shadow: 0 0 0 2px color-mix(in srgb, var(--color-primary) 20%, transparent);
+  }
+
+  .select-base {
+    @apply input-base cursor-pointer appearance-none bg-[length:1rem] bg-[right_0.65rem_center] bg-no-repeat pr-10;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%2371717a'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'/%3E%3C/svg%3E");
+  }
+
+  .kbd {
+    @apply inline-flex items-center rounded-md border border-border-base bg-bg-input px-1.5 py-0.5 font-mono text-[10px] font-medium uppercase tracking-wide text-text-muted;
+  }
+}
 
 /* ── Prose ── */
-.prose-dark p   { margin-bottom: .75rem; color: var(--text-base); }
-.prose-dark h1,.prose-dark h2,.prose-dark h3 { color: var(--text-base); margin: 1rem 0 .5rem; }
-.prose-dark strong { color: var(--text-base); font-weight: 600; }
-.prose-dark ul, .prose-dark ol { padding-left: 1.5rem; margin-bottom: .75rem; }
-.prose-dark li  { margin-bottom: .25rem; }
-.prose-dark code { background: var(--bg-input); padding: .1em .4em; border-radius: 3px; font-size: .875em; }
+.prose-dark p {
+  margin-bottom: 0.75rem;
+  color: var(--text-base);
+}
+.prose-dark h1,
+.prose-dark h2,
+.prose-dark h3 {
+  color: var(--text-base);
+  margin: 1rem 0 0.5rem;
+}
+.prose-dark strong {
+  color: var(--text-base);
+  font-weight: 600;
+}
+.prose-dark ul,
+.prose-dark ol {
+  padding-left: 1.5rem;
+  margin-bottom: 0.75rem;
+}
+.prose-dark li {
+  margin-bottom: 0.25rem;
+}
+.prose-dark code {
+  background: var(--bg-input);
+  padding: 0.1em 0.4em;
+  border-radius: 4px;
+  font-size: 0.875em;
+}

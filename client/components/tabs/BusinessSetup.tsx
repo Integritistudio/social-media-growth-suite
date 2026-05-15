@@ -86,12 +86,13 @@ export default function BusinessSetup() {
   return (
     <div className="space-y-6 animate-slide-up">
       {/* Page header */}
-      <div>
-        <h2 className="font-heading font-bold text-2xl text-text-base">🏢 Business Setup</h2>
-        <p className="text-text-muted mt-1">
-          Set up your business profile to power AI-generated content tailored to your brand.
+      <header className="space-y-1">
+        <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-text-muted/75">Foundation</p>
+        <h2 className="font-heading text-3xl font-semibold tracking-tight text-text-base">Business profile</h2>
+        <p className="max-w-2xl text-sm leading-relaxed text-text-muted">
+          Define how the AI speaks for your brand — used across captions, strategy, and generated visuals.
         </p>
-      </div>
+      </header>
 
       {/* URL Analyser */}
       <Card title="AI Website Analyser">
@@ -104,11 +105,11 @@ export default function BusinessSetup() {
             value={url}
             onChange={(e) => setUrl(e.target.value)}
             placeholder="https://yourbusiness.com"
-            className="flex-1 px-4 py-2.5 bg-bg-input border border-border-base rounded-lg text-text-base placeholder-text-muted focus:outline-none focus:border-accent/50 text-sm"
+            className="input-base flex-1"
             onKeyDown={(e) => e.key === 'Enter' && handleAnalyse()}
           />
           <Button variant="primary" loading={analysing} onClick={handleAnalyse} disabled={!url.trim()}>
-            {analysing ? 'Analysing...' : '🔍 Analyse'}
+            {analysing ? 'Analysing…' : 'Analyse site'}
           </Button>
         </div>
         {analyseError && (
@@ -233,12 +234,12 @@ export default function BusinessSetup() {
         </div>
 
         {/* Actions */}
-        <div className="flex items-center gap-3 mt-6 pt-5 border-t border-border-base">
+        <div className="mt-6 flex items-center gap-3 border-t border-border-base pt-5">
           <Button variant="primary" loading={saving} onClick={handleSave}>
-            💾 Save Profile
+            Save profile
           </Button>
           <Button variant="danger" onClick={handleClear}>
-            🗑️ Clear Profile
+            Clear profile
           </Button>
           {profile?.name && (
             <span className="text-xs text-green-400 ml-auto">

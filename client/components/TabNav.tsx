@@ -7,14 +7,13 @@ type TabId = 'business' | 'tracker' | 'funnel' | 'content';
 interface Tab {
   id: TabId;
   label: string;
-  icon: string;
 }
 
 const TABS: Tab[] = [
-  { id: 'business', label: 'Business Setup', icon: '🏢' },
-  { id: 'tracker', label: 'Conversion Tracker', icon: '📊' },
-  { id: 'funnel', label: 'Funnel Strategy', icon: '🎯' },
-  { id: 'content', label: 'Content Generator', icon: '✨' },
+  { id: 'business', label: 'Business Setup' },
+  { id: 'tracker', label: 'Conversion Tracker' },
+  { id: 'funnel', label: 'Funnel Strategy' },
+  { id: 'content', label: 'Content Generator' },
 ];
 
 interface TabNavProps {
@@ -24,23 +23,23 @@ interface TabNavProps {
 
 export default function TabNav({ activeTab, setActiveTab }: TabNavProps) {
   return (
-    <nav className="sticky top-[72px] z-30 bg-bg-base/95 backdrop-blur-md border-b border-border-base">
-      <div className="max-w-7xl mx-auto px-4">
-        <div className="flex overflow-x-auto scrollbar-hide">
+    <nav className="sticky top-[72px] z-30 border-b border-border-base bg-bg-base/90 backdrop-blur-md">
+      <div className="mx-auto max-w-7xl px-4">
+        <div className="scrollbar-hide flex overflow-x-auto gap-1 py-1">
           {TABS.map((tab) => {
             const isActive = activeTab === tab.id;
             return (
               <button
                 key={tab.id}
+                type="button"
                 onClick={() => setActiveTab(tab.id)}
-                className={`flex items-center gap-2 px-5 py-4 text-sm font-medium whitespace-nowrap border-b-2 transition-all duration-200 ${
+                className={`whitespace-nowrap rounded-xl px-5 py-3 text-[13px] font-semibold transition-all duration-200 ease-out ${
                   isActive
-                    ? 'border-accent text-accent'
-                    : 'border-transparent text-text-muted hover:text-text-base hover:border-border-base'
+                    ? 'bg-bg-card text-text-base shadow-sm ring-1 ring-border-base'
+                    : 'text-text-muted hover:bg-bg-input/70 hover:text-text-base'
                 }`}
               >
-                <span>{tab.icon}</span>
-                <span>{tab.label}</span>
+                {tab.label}
               </button>
             );
           })}

@@ -4,6 +4,7 @@ const { auth } = require('../middleware/auth');
 const { generateText, extractJSON, getDecryptedKeys } = require('../services/aiService');
 const { generateImage, buildPostHTML } = require('../services/imageService');
 const { GeneratedContent, AISettings } = require('../models');
+const { isMaxAllowedPacketError, packetTooLargeResponse } = require('../utils/dbPacketError');
 
 router.use(auth);
 
@@ -128,6 +129,9 @@ router.post('/generate-image', async (req, res) => {
     res.json({ imageData: result.data, mimeType: result.mimeType, provider: 'openai' });
   } catch (err) {
     console.error('generate-image error:', err.message);
+    if (isMaxAllowedPacketError(err)) {
+      return res.status(413).json(packetTooLargeResponse());
+    }
     res.status(500).json({ error: err.message });
   }
 });
@@ -146,7 +150,12 @@ router.post('/save-image', async (req, res) => {
       ai_provider: 'claude',
     });
     res.json({ success: true, id: record.id });
-  } catch (err) { res.status(500).json({ error: err.message }); }
+  } catch (err) {
+    if (isMaxAllowedPacketError(err)) {
+      return res.status(413).json(packetTooLargeResponse());
+    }
+    res.status(500).json({ error: err.message });
+  }
 });
 
 module.exports = router;

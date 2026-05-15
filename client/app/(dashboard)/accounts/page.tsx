@@ -47,9 +47,9 @@ export default function AccountsPage() {
   return (
     <div className="space-y-8 animate-slide-up">
       <div>
-        <h1 className="font-heading font-bold text-2xl text-text-base">Connected Accounts</h1>
-        <p className="text-text-muted mt-1 text-sm">
-          Connect your Instagram and LinkedIn accounts so the system can automatically fetch posts, impressions, and DMs.
+        <h1 className="font-heading text-3xl font-semibold tracking-tight text-text-base">Connected accounts</h1>
+        <p className="mt-2 max-w-2xl text-sm leading-relaxed text-text-muted">
+          OAuth connections power analytics sync and publishing. Tokens are stored encrypted on the server.
         </p>
       </div>
 
@@ -70,7 +70,7 @@ export default function AccountsPage() {
           name="Instagram"
           description="Fetch posts, impressions per post, reach, engagement, and DMs automatically."
           icon={<InstagramIcon />}
-          gradient="from-[#f09433] via-[#e6683c] via-[#dc2743] via-[#cc2366] to-[#bc1888]"
+          gradient="from-pink-700/75 via-orange-600/65 to-amber-500/55"
           connected={status.instagram?.connected}
           accountName={status.instagram?.account_name}
           accountPic={status.instagram?.account_pic}
@@ -86,7 +86,7 @@ export default function AccountsPage() {
           name="LinkedIn"
           description="Publish posts to your LinkedIn profile and track professional engagement."
           icon={<LinkedInIcon />}
-          gradient="from-[#0077b5] to-[#00a0dc]"
+          gradient="from-[#0a66c2] to-[#378fe9]"
           connected={status.linkedin?.connected}
           accountName={status.linkedin?.account_name}
           accountPic={status.linkedin?.account_pic}
@@ -98,8 +98,8 @@ export default function AccountsPage() {
       </div>
 
       {/* Info box */}
-      <div className="bg-bg-card border border-border-base rounded-2xl p-5">
-        <h3 className="font-heading font-semibold text-text-base mb-3 text-sm">How it works</h3>
+      <div className="rounded-2xl border border-border-base bg-bg-card p-6 shadow-card">
+        <h3 className="font-heading text-sm font-semibold text-text-base">How connections work</h3>
         <ol className="space-y-2 text-sm text-text-muted list-decimal list-inside">
           <li>An admin configures the Meta App ID/Secret and LinkedIn Client ID/Secret in the Admin Panel.</li>
           <li>Click "Connect" above — you'll be redirected to the platform's login page to approve access.</li>
@@ -130,7 +130,7 @@ interface PlatformCardProps {
 
 function PlatformCard({ name, description, icon, gradient, connected, accountName, accountPic, loading, disconnecting, onConnect, onDisconnect }: PlatformCardProps) {
   return (
-    <div className="bg-bg-card border border-border-base rounded-2xl overflow-hidden">
+    <div className="overflow-hidden rounded-2xl border border-border-base bg-bg-card shadow-card transition-shadow duration-300 hover:shadow-float">
       {/* Header stripe */}
       <div className={`h-1.5 bg-gradient-to-r ${gradient}`} />
 
@@ -140,7 +140,7 @@ function PlatformCard({ name, description, icon, gradient, connected, accountNam
             {icon}
           </div>
           <div>
-            <h2 className="font-heading font-bold text-text-base text-lg">{name}</h2>
+            <h2 className="font-heading text-lg font-semibold text-text-base">{name}</h2>
             <p className="text-text-muted text-xs mt-0.5">{description}</p>
           </div>
         </div>
@@ -174,7 +174,7 @@ function PlatformCard({ name, description, icon, gradient, connected, accountNam
         ) : (
           <button
             onClick={onConnect}
-            className={`w-full py-3 rounded-xl bg-gradient-to-r ${gradient} text-white text-sm font-semibold hover:opacity-90 transition-opacity`}
+            className={`w-full rounded-xl bg-gradient-to-r py-3 text-sm font-semibold text-white shadow-md transition-all duration-200 hover:brightness-[1.05] active:scale-[0.99] ${gradient}`}
           >
             Connect {name}
           </button>

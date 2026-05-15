@@ -17,10 +17,12 @@ export default function SettingsModal({ onClose }: SettingsModalProps) {
       className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-fade-in"
       onClick={e => e.target === e.currentTarget && onClose()}
     >
-      <div className="w-full max-w-md bg-bg-card border border-border-base rounded-2xl shadow-2xl animate-slide-up">
-        <div className="flex items-center justify-between px-6 py-5 border-b border-border-base">
-          <h2 className="font-heading font-bold text-lg text-text-base">⚙️ Settings</h2>
-          <button onClick={onClose} className="w-8 h-8 flex items-center justify-center rounded-lg text-text-muted hover:text-text-base hover:bg-bg-input transition-all">✕</button>
+      <div className="w-full max-w-xl rounded-2xl border border-border-base bg-bg-card shadow-float animate-slide-up">
+        <div className="flex items-center justify-between border-b border-border-base px-6 py-5">
+          <h2 className="font-heading text-lg font-semibold tracking-tight text-text-base">Settings</h2>
+          <button type="button" onClick={onClose} className="flex h-9 w-9 items-center justify-center rounded-xl text-text-muted transition-colors hover:bg-bg-input hover:text-text-base focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/35" aria-label="Close">
+            <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2"><path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
+          </button>
         </div>
         <div className="p-6 space-y-4">
           <p className="text-sm text-text-muted">
@@ -28,8 +30,8 @@ export default function SettingsModal({ onClose }: SettingsModalProps) {
           </p>
           {isAdmin ? (
             <Link href="/admin" onClick={onClose}
-              className="flex items-center justify-center gap-2 w-full py-2.5 rounded-lg bg-gradient-accent text-white font-semibold text-sm hover:opacity-90 transition-opacity">
-              ⚙️ Go to Admin Panel
+              className="flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-accent py-3 text-sm font-semibold text-white shadow-md shadow-accent/18 transition-all duration-200 hover:brightness-[1.04]">
+              Admin panel
             </Link>
           ) : (
             <div className="px-4 py-3 rounded-lg bg-yellow-500/10 border border-yellow-500/20 text-yellow-400 text-sm">

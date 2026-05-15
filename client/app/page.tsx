@@ -4,6 +4,8 @@ import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
 
+import Spinner from '@/components/ui/Spinner';
+
 export default function RootPage() {
   const { user, loading } = useAuth();
   const router = useRouter();
@@ -15,10 +17,10 @@ export default function RootPage() {
   }, [user, loading, router]);
 
   return (
-    <div className="min-h-screen bg-bg-base flex items-center justify-center">
-      <div className="text-center">
-        <div className="w-12 h-12 rounded-2xl bg-gradient-accent mx-auto mb-4 animate-pulse" />
-        <p className="text-text-muted text-sm">Loading…</p>
+    <div className="flex min-h-screen items-center justify-center bg-app-shell">
+      <div className="flex flex-col items-center gap-4">
+        <Spinner size="lg" />
+        <p className="text-sm font-medium tracking-wide text-text-muted">Starting…</p>
       </div>
     </div>
   );

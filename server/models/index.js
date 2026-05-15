@@ -22,6 +22,25 @@ GeneratedContent.belongsTo(User,   { foreignKey: 'user_id' });
 User.hasMany(SocialConnection,     { foreignKey: 'user_id', as: 'socialConnections' });
 SocialConnection.belongsTo(User,   { foreignKey: 'user_id' });
 
+const LinkedInAutomationSettings = require('./LinkedInAutomationSettings');
+const LinkedInCampaign = require('./LinkedInCampaign');
+const LinkedInProspect = require('./LinkedInProspect');
+const LinkedInOutreachAction = require('./LinkedInOutreachAction');
+
+User.hasOne(LinkedInAutomationSettings, { foreignKey: 'user_id', as: 'linkedinAutomationSettings' });
+LinkedInAutomationSettings.belongsTo(User, { foreignKey: 'user_id' });
+
+User.hasMany(LinkedInCampaign, { foreignKey: 'user_id', as: 'linkedinCampaigns' });
+LinkedInCampaign.belongsTo(User, { foreignKey: 'user_id' });
+
+LinkedInCampaign.hasMany(LinkedInProspect, { foreignKey: 'campaign_id', as: 'prospects' });
+LinkedInProspect.belongsTo(LinkedInCampaign, { foreignKey: 'campaign_id' });
+
+LinkedInCampaign.hasMany(LinkedInOutreachAction, { foreignKey: 'campaign_id', as: 'outreachActions' });
+LinkedInOutreachAction.belongsTo(LinkedInCampaign, { foreignKey: 'campaign_id' });
+LinkedInOutreachAction.belongsTo(LinkedInProspect, { foreignKey: 'prospect_id' });
+LinkedInProspect.hasMany(LinkedInOutreachAction, { foreignKey: 'prospect_id', as: 'actions' });
+
 async function syncDatabase() {
   await sequelize.authenticate();
   await sequelize.sync({ alter: true });
@@ -32,5 +51,7 @@ async function syncDatabase() {
 
 module.exports = {
   sequelize, User, BusinessProfile, AISettings,
-  ConversionEntry, ImportantDM, GeneratedContent, SocialConnection, syncDatabase,
+  ConversionEntry, ImportantDM, GeneratedContent, SocialConnection,
+  LinkedInAutomationSettings, LinkedInCampaign, LinkedInProspect, LinkedInOutreachAction,
+  syncDatabase,
 };
