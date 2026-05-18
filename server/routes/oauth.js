@@ -4,9 +4,14 @@ const axios = require('axios');
 const { auth } = require('../middleware/auth');
 const { AISettings, SocialConnection } = require('../models');
 const { encrypt, decrypt } = require('../services/encryptionService');
+const {
+  LINKEDIN_SCOPES,
+  getLinkedInClientCredentials,
+  linkedInPersonId,
+} = require('../utils/linkedinOAuth');
 
 const CLIENT_URL = process.env.CLIENT_URL || 'http://localhost:3000';
-const SERVER_URL = process.env.SERVER_URL || 'http://localhost:3001';
+const SERVER_URL = process.env.SERVER_URL || `http://localhost:${process.env.PORT || 3001}`;
 
 // ── Helpers ───────────────────────────────────────────────────
 
@@ -24,12 +29,39 @@ function decodeState(state) {
 
 async function getAppSettings() {
   const s = await AISettings.findOne();
-  return {
+  const fromDb = {
     metaAppId:            s?.meta_app_id || '',
     metaAppSecret:        s?.meta_app_secret ? decrypt(s.meta_app_secret) : '',
     linkedinClientId:     s?.linkedin_client_id || '',
     linkedinClientSecret: s?.linkedin_client_secret ? decrypt(s.linkedin_client_secret) : '',
   };
+  const linkedin = getLinkedInClientCredentials(fromDb);
+  return { ...fromDb, ...linkedin };
+}
+
+async function fetchLinkedInProfile(accessToken) {
+  try {
+    const { data } = await axios.get('https://api.linkedin.com/v2/userinfo', {
+      headers: { Authorization: `Bearer ${accessToken}` },
+    });
+    return {
+      id: linkedInPersonId(data.sub) || data.sub,
+      displayName: data.name || `${data.given_name || ''} ${data.family_name || ''}`.trim(),
+      picUrl: data.picture || null,
+      raw: data,
+    };
+  } catch {
+    const { data: profile } = await axios.get('https://api.linkedin.com/v2/me', {
+      params: { projection: '(id,localizedFirstName,localizedLastName,profilePicture(displayImage~:playableStreams))' },
+      headers: { Authorization: `Bearer ${accessToken}` },
+    });
+    return {
+      id: linkedInPersonId(profile.id) || profile.id,
+      displayName: `${profile.localizedFirstName || ''} ${profile.localizedLastName || ''}`.trim(),
+      picUrl: profile.profilePicture?.['displayImage~']?.elements?.[0]?.identifiers?.[0]?.identifier || null,
+      raw: profile,
+    };
+  }
 }
 
 // ── Instagram / Meta OAuth ────────────────────────────────────
@@ -163,18 +195,19 @@ router.get('/linkedin/connect', auth, async (req, res) => {
   try {
     const cfg = await getAppSettings();
     if (!cfg.linkedinClientId || !cfg.linkedinClientSecret)
-      return res.status(400).json({ error: 'LinkedIn Client ID and Secret not configured in Admin Panel' });
+      return res.status(400).json({
+        error: 'LinkedIn Client ID and Secret not configured. Set CLIENT_ID and PRIMARY_CLIENT_SECRET in server .env, or add them in the Admin Panel.',
+      });
 
     const state = encodeState(req.user.id);
     const redirectUri = `${SERVER_URL}/api/oauth/linkedin/callback`;
-    const scope = 'r_liteprofile r_emailaddress w_member_social';
 
     const url = new URL('https://www.linkedin.com/oauth/v2/authorization');
     url.searchParams.set('response_type', 'code');
     url.searchParams.set('client_id', cfg.linkedinClientId);
     url.searchParams.set('redirect_uri', redirectUri);
     url.searchParams.set('state', state);
-    url.searchParams.set('scope', scope);
+    url.searchParams.set('scope', LINKEDIN_SCOPES);
 
     res.redirect(url.toString());
   } catch (err) {
@@ -213,15 +246,7 @@ router.get('/linkedin/callback', async (req, res) => {
 
     const accessToken = tokenData.access_token;
     const expiresIn = tokenData.expires_in || 5184000;
-
-    // Get LinkedIn profile
-    const { data: profile } = await axios.get('https://api.linkedin.com/v2/me', {
-      params: { projection: '(id,localizedFirstName,localizedLastName,profilePicture(displayImage~:playableStreams))' },
-      headers: { Authorization: `Bearer ${accessToken}` },
-    });
-
-    const displayName = `${profile.localizedFirstName} ${profile.localizedLastName}`.trim();
-    const picUrl = profile.profilePicture?.['displayImage~']?.elements?.[0]?.identifiers?.[0]?.identifier;
+    const profile = await fetchLinkedInProfile(accessToken);
     const tokenExpiry = new Date(Date.now() + expiresIn * 1000);
 
     await SocialConnection.upsert({
@@ -230,10 +255,10 @@ router.get('/linkedin/callback', async (req, res) => {
       access_token:  encrypt(accessToken),
       token_expires: tokenExpiry,
       account_id:    profile.id,
-      account_name:  displayName,
-      account_pic:   picUrl || null,
-      scopes:        'r_liteprofile r_emailaddress w_member_social',
-      raw_profile:   JSON.stringify(profile),
+      account_name:  profile.displayName,
+      account_pic:   profile.picUrl || null,
+      scopes:        LINKEDIN_SCOPES,
+      raw_profile:   JSON.stringify(profile.raw),
     });
 
     res.redirect(`${CLIENT_URL}/accounts?connected=linkedin`);

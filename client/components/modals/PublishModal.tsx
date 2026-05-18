@@ -1,7 +1,8 @@
 'use client';
 
-import React, { useState } from 'react';
-import { publishToInstagram, publishToLinkedIn } from '@/lib/api';
+import React, { useState, useEffect } from 'react';
+import { publishToInstagram, publishToLinkedIn, getOAuthStatus } from '@/lib/api';
+import type { PostPlatform } from '@/lib/types';
 import Button from '@/components/ui/Button';
 import Alert from '@/components/ui/Alert';
 
@@ -9,15 +10,19 @@ interface PublishModalProps {
   caption: string;
   /** Pass a data: URI (base64) OR a public URL */
   imageData?: string;
+  platform?: PostPlatform;
   onClose: () => void;
 }
 
 type Status = 'idle' | 'loading' | 'success' | 'error';
 
-export default function PublishModal({ caption, imageData, onClose }: PublishModalProps) {
-  const [publishIG, setPublishIG] = useState(true);
+export default function PublishModal({ caption, imageData, platform = 'instagram', onClose }: PublishModalProps) {
+  const [publishIG, setPublishIG] = useState(false);
   const [publishLI, setPublishLI] = useState(false);
-  // For Instagram we always need a public URL; base64 can't be passed directly to Meta API
+  const [igConnected, setIgConnected] = useState(false);
+  const [liConnected, setLiConnected] = useState(false);
+  const [oauthLoaded, setOauthLoaded] = useState(false);
+
   const [imageUrl, setImageUrl] = useState(
     imageData?.startsWith('http') ? imageData : ''
   );
@@ -26,6 +31,39 @@ export default function PublishModal({ caption, imageData, onClose }: PublishMod
   const [liStatus, setLiStatus] = useState<Status>('idle');
   const [igError, setIgError] = useState('');
   const [liError, setLiError] = useState('');
+
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      try {
+        const status = await getOAuthStatus();
+        if (cancelled) return;
+        const ig = Boolean(status.instagram?.connected);
+        const li = Boolean(status.linkedin?.connected);
+        setIgConnected(ig);
+        setLiConnected(li);
+
+        if (platform === 'linkedin') {
+          setPublishLI(li);
+          setPublishIG(false);
+        } else if (platform === 'instagram') {
+          setPublishIG(ig);
+          setPublishLI(false);
+        } else {
+          setPublishIG(ig);
+          setPublishLI(li);
+        }
+      } catch {
+        if (!cancelled) {
+          setPublishLI(platform === 'linkedin' || platform === 'both');
+          setPublishIG(platform === 'instagram' || platform === 'both');
+        }
+      } finally {
+        if (!cancelled) setOauthLoaded(true);
+      }
+    })();
+    return () => { cancelled = true; };
+  }, [platform]);
 
   const isPublishing = igStatus === 'loading' || liStatus === 'loading';
   const allDone =
@@ -61,6 +99,10 @@ export default function PublishModal({ caption, imageData, onClose }: PublishMod
     await Promise.all([igPromise, liPromise]);
   }
 
+  const canPublish =
+    oauthLoaded &&
+    ((publishIG && igConnected) || (publishLI && liConnected));
+
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-fade-in"
       onClick={e => e.target === e.currentTarget && onClose()}>
@@ -88,45 +130,69 @@ export default function PublishModal({ caption, imageData, onClose }: PublishMod
 
           <div>
             <p className="text-xs text-text-muted mb-3 font-medium uppercase tracking-wide">Publish To</p>
-            <div className="space-y-3">
-              {/* Instagram */}
-              <label className="flex items-start gap-3 cursor-pointer">
-                <input type="checkbox" checked={publishIG} onChange={e => setPublishIG(e.target.checked)} className="mt-1 accent-accent" />
-                <div className="flex-1">
-                  <div className="flex items-center gap-2">
-                    <span className="text-sm font-medium text-text-base">Instagram</span>
-                    {igStatus === 'success' && <span className="text-xs text-green-400">✓ Published!</span>}
-                    {igStatus === 'error'   && <span className="text-xs text-red-400">✗ Failed</span>}
-                    {igStatus === 'loading' && <span className="inline-block w-3 h-3 border border-accent border-t-transparent rounded-full animate-spin" />}
-                  </div>
-                  {publishIG && (
-                    <div className="mt-2">
-                      <input type="url" value={imageUrl} onChange={e => setImageUrl(e.target.value)}
-                        placeholder="Publicly accessible image URL (required)"
-                        className="input-base py-2 text-sm"
-                      />
-                      <p className="text-xs text-text-muted mt-1">Meta requires a public URL. Download your image, host it, then paste the URL here.</p>
+            {!oauthLoaded ? (
+              <p className="text-sm text-text-muted">Loading connected accounts…</p>
+            ) : (
+              <div className="space-y-3">
+                <label className={`flex items-start gap-3 ${igConnected ? 'cursor-pointer' : 'opacity-50'}`}>
+                  <input
+                    type="checkbox"
+                    checked={publishIG}
+                    disabled={!igConnected}
+                    onChange={e => setPublishIG(e.target.checked)}
+                    className="mt-1 accent-accent"
+                  />
+                  <div className="flex-1">
+                    <div className="flex items-center gap-2">
+                      <span className="text-sm font-medium text-text-base">Instagram</span>
+                      {!igConnected && <span className="text-xs text-text-muted">(not connected)</span>}
+                      {igStatus === 'success' && <span className="text-xs text-green-400">✓ Published!</span>}
+                      {igStatus === 'error'   && <span className="text-xs text-red-400">✗ Failed</span>}
+                      {igStatus === 'loading' && <span className="inline-block w-3 h-3 border border-accent border-t-transparent rounded-full animate-spin" />}
                     </div>
-                  )}
-                  {igStatus === 'error' && <p className="text-xs text-red-400 mt-1">{igError}</p>}
-                </div>
-              </label>
-
-              {/* LinkedIn */}
-              <label className="flex items-start gap-3 cursor-pointer">
-                <input type="checkbox" checked={publishLI} onChange={e => setPublishLI(e.target.checked)} className="mt-1 accent-accent" />
-                <div className="flex-1">
-                  <div className="flex items-center gap-2">
-                    <span className="text-sm font-medium text-text-base">LinkedIn</span>
-                    {liStatus === 'success' && <span className="text-xs text-green-400">✓ Published!</span>}
-                    {liStatus === 'error'   && <span className="text-xs text-red-400">✗ Failed</span>}
-                    {liStatus === 'loading' && <span className="inline-block w-3 h-3 border border-accent border-t-transparent rounded-full animate-spin" />}
+                    {publishIG && igConnected && (
+                      <div className="mt-2">
+                        <input type="url" value={imageUrl} onChange={e => setImageUrl(e.target.value)}
+                          placeholder="Publicly accessible image URL (required)"
+                          className="input-base py-2 text-sm"
+                        />
+                        <p className="text-xs text-text-muted mt-1">Meta requires a public URL. Host your image online, then paste the URL here.</p>
+                      </div>
+                    )}
+                    {igStatus === 'error' && <p className="text-xs text-red-400 mt-1">{igError}</p>}
                   </div>
-                  <p className="text-xs text-text-muted mt-0.5">Uses LinkedIn credentials configured by Admin</p>
-                  {liStatus === 'error' && <p className="text-xs text-red-400 mt-1">{liError}</p>}
-                </div>
-              </label>
-            </div>
+                </label>
+
+                <label className={`flex items-start gap-3 ${liConnected ? 'cursor-pointer' : 'opacity-50'}`}>
+                  <input
+                    type="checkbox"
+                    checked={publishLI}
+                    disabled={!liConnected}
+                    onChange={e => setPublishLI(e.target.checked)}
+                    className="mt-1 accent-accent"
+                  />
+                  <div className="flex-1">
+                    <div className="flex items-center gap-2">
+                      <span className="text-sm font-medium text-text-base">LinkedIn</span>
+                      {!liConnected && <span className="text-xs text-text-muted">(not connected)</span>}
+                      {liStatus === 'success' && <span className="text-xs text-green-400">✓ Published!</span>}
+                      {liStatus === 'error'   && <span className="text-xs text-red-400">✗ Failed</span>}
+                      {liStatus === 'loading' && <span className="inline-block w-3 h-3 border border-accent border-t-transparent rounded-full animate-spin" />}
+                    </div>
+                    {liConnected && (
+                      <p className="text-xs text-text-muted mt-0.5">Text posts work without an image</p>
+                    )}
+                    {liStatus === 'error' && <p className="text-xs text-red-400 mt-1">{liError}</p>}
+                  </div>
+                </label>
+
+                {oauthLoaded && !igConnected && !liConnected && (
+                  <Alert variant="error">
+                    No accounts connected. Go to Connected accounts to link Instagram or LinkedIn.
+                  </Alert>
+                )}
+              </div>
+            )}
           </div>
 
           {allDone && (igStatus === 'success' || liStatus === 'success') && (
@@ -137,8 +203,13 @@ export default function PublishModal({ caption, imageData, onClose }: PublishMod
         <div className="flex items-center justify-end gap-3 px-6 py-4 border-t border-border-base">
           <Button variant="secondary" onClick={onClose}>{allDone ? 'Close' : 'Cancel'}</Button>
           {!allDone && (
-            <Button variant="primary" loading={isPublishing} disabled={!publishIG && !publishLI} onClick={handlePublish}>
-              Publish now
+            <Button
+              variant="primary"
+              loading={isPublishing || !oauthLoaded}
+              disabled={!canPublish}
+              onClick={handlePublish}
+            >
+              {publishLI && !publishIG ? 'Post to LinkedIn' : 'Publish now'}
             </Button>
           )}
         </div>

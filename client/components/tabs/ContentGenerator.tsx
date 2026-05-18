@@ -350,11 +350,14 @@ body{width:1080px;height:1080px;background:#09090b;font-family:system-ui,sans-se
 
                       {/* Image + save actions */}
                       <div className="flex flex-wrap items-center gap-2">
+                        <Button variant="primary" size="sm" onClick={() => setShowPublish(true)}>
+                          {platform === 'linkedin' ? 'Post to LinkedIn' : platform === 'both' ? 'Publish' : 'Publish post'}
+                        </Button>
                         <Button variant="secondary" loading={imageLoading} onClick={handleGenerateImage}>
                           {imageLoading ? 'Generating…' : 'Generate image'}
                         </Button>
                         <Button
-                          variant="primary"
+                          variant="secondary"
                           size="sm"
                           loading={saving}
                           onClick={handleSavePost}
@@ -362,11 +365,6 @@ body{width:1080px;height:1080px;background:#09090b;font-family:system-ui,sans-se
                         >
                           {savedId ? 'Saved' : 'Save post'}
                         </Button>
-                        {imageSrc && (
-                          <Button variant="primary" size="sm" onClick={() => setShowPublish(true)}>
-                            Publish
-                          </Button>
-                        )}
                       </div>
 
                       {savedId && (
@@ -444,7 +442,12 @@ body{width:1080px;height:1080px;background:#09090b;font-family:system-ui,sans-se
       )}
 
       {showPublish && generated && (
-        <PublishModal caption={generated.content} imageData={imageSrc} onClose={() => setShowPublish(false)} />
+        <PublishModal
+          caption={generated.content}
+          imageData={imageSrc || undefined}
+          platform={platform}
+          onClose={() => setShowPublish(false)}
+        />
       )}
     </div>
   );

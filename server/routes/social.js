@@ -4,6 +4,7 @@ const axios = require('axios');
 const { auth } = require('../middleware/auth');
 const { SocialConnection } = require('../models');
 const { decrypt } = require('../services/encryptionService');
+const { linkedInPersonUrn } = require('../utils/linkedinOAuth');
 
 router.use(auth);
 
@@ -113,18 +114,28 @@ router.post('/linkedin/publish', async (req, res) => {
       return res.status(400).json({ error: 'LinkedIn not connected. Go to Connected Accounts to connect.' });
 
     const { caption } = req.body;
+    if (!caption?.trim()) return res.status(400).json({ error: 'Caption is required' });
+
+    const author = linkedInPersonUrn(li.account_id);
+    if (!author) return res.status(400).json({ error: 'LinkedIn account id missing. Reconnect your account.' });
 
     const { data } = await axios.post('https://api.linkedin.com/v2/ugcPosts', {
-      author: `urn:li:person:${li.account_id}`,
+      author,
       lifecycleState: 'PUBLISHED',
       specificContent: {
         'com.linkedin.ugc.ShareContent': {
-          shareCommentary: { text: caption },
+          shareCommentary: { text: caption.trim() },
           shareMediaCategory: 'NONE',
         },
       },
       visibility: { 'com.linkedin.ugc.MemberNetworkVisibility': 'PUBLIC' },
-    }, { headers: { Authorization: `Bearer ${li.token}`, 'Content-Type': 'application/json' } });
+    }, {
+      headers: {
+        Authorization: `Bearer ${li.token}`,
+        'Content-Type': 'application/json',
+        'X-Restli-Protocol-Version': '2.0.0',
+      },
+    });
     res.json({ success: true, postId: data.id });
   } catch (err) {
     res.status(500).json({ error: err.response?.data?.message || err.message });

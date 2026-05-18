@@ -101,7 +101,7 @@ export default function AccountsPage() {
       <div className="rounded-2xl border border-border-base bg-bg-card p-6 shadow-card">
         <h3 className="font-heading text-sm font-semibold text-text-base">How connections work</h3>
         <ol className="space-y-2 text-sm text-text-muted list-decimal list-inside">
-          <li>An admin configures the Meta App ID/Secret and LinkedIn Client ID/Secret in the Admin Panel.</li>
+          <li>LinkedIn uses your app credentials from server <code className="text-xs">.env</code> (or Admin Panel). Meta/Instagram still uses the Admin Panel.</li>
           <li>Click "Connect" above — you'll be redirected to the platform's login page to approve access.</li>
           <li>Once approved, you'll return here and your access token is stored securely (encrypted in the database).</li>
           <li>The Analytics page will automatically fetch your posts, impressions, and DMs from connected accounts.</li>
@@ -207,7 +207,7 @@ function formatError(code: string): string {
     instagram_denied: 'Instagram authorization was denied.',
     linkedin_denied:  'LinkedIn authorization was denied.',
     instagram_failed: 'Instagram connection failed. Check your Meta App credentials in Admin Panel.',
-    linkedin_failed:  'LinkedIn connection failed. Check your LinkedIn App credentials in Admin Panel.',
+    linkedin_failed:  'LinkedIn connection failed. Check CLIENT_ID / PRIMARY_CLIENT_SECRET in server .env and redirect URLs in the LinkedIn Developer app.',
     invalid_state:    'Invalid OAuth state. Please try again.',
   };
   return map[code] || `Connection error: ${code}`;

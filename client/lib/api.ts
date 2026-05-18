@@ -175,10 +175,10 @@ export async function refreshPostMetrics(id: number) {
 // ── OAuth ─────────────────────────────────────────────────────
 export function getOAuthConnectUrl(platform: 'instagram' | 'linkedin'): string {
   const token = getToken();
-  // We navigate to backend which redirects to OAuth provider.
-  // JWT is passed via Authorization header — but since this is a browser redirect
-  // we embed it in the query. The backend reads req.query.token as fallback.
-  return `/api/oauth/${platform}/connect?token=${token}`;
+  // Browser redirect: JWT in query (backend auth middleware accepts ?token=).
+  const path = `/api/oauth/${platform}/connect?token=${encodeURIComponent(token || '')}`;
+  const apiBase = (process.env.NEXT_PUBLIC_API_URL || '').replace(/\/$/, '');
+  return apiBase ? `${apiBase}${path}` : path;
 }
 export async function getOAuthStatus(): Promise<OAuthStatus> {
   const { data } = await api.get('/oauth/status');
